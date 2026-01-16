@@ -28,11 +28,11 @@ class BayHisto
 
     #[ORM\ManyToOne(inversedBy: 'bayHistos')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?bay $bay = null;
+    private ?Bay $bay = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?state $state = null;
+    private ?State $state = null;
 
     public function getId(): ?int
     {
@@ -87,12 +87,12 @@ class BayHisto
         return $this;
     }
 
-    public function getBay(): ?bay
+    public function getBay(): ?Bay
     {
         return $this->bay;
     }
 
-    public function setBay(?bay $bay): static
+    public function setBay(?Bay $bay): static
     {
         $this->bay = $bay;
 

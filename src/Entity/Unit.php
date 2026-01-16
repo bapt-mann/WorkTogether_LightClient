@@ -24,7 +24,7 @@ class Unit
 
     #[ORM\ManyToOne(inversedBy: 'units')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?bay $bay = null;
+    private ?Bay $bay = null;
 
     /**
      * @var Collection<int, Intervention>
@@ -33,7 +33,7 @@ class Unit
     private Collection $interventions;
 
     #[ORM\ManyToOne(inversedBy: 'units')]
-    private ?rental $rental = null;
+    private ?Rental $rental = null;
 
     /**
      * @var Collection<int, UnitRentalHisto>
@@ -49,7 +49,7 @@ class Unit
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?state $state = null;
+    private ?State $state = null;
 
     public function __construct()
     {
@@ -87,12 +87,12 @@ class Unit
         return $this;
     }
 
-    public function getBay(): ?bay
+    public function getBay(): ?Bay
     {
         return $this->bay;
     }
 
-    public function setBay(?bay $bay): static
+    public function setBay(?Bay $bay): static
     {
         $this->bay = $bay;
 

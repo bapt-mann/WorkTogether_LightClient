@@ -1,0 +1,150 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Work Together Data Solutions{% endblock %}
+
+{% block body %}
+    {# 1. SECTION HERO : Présentation principale #}
+    <section class="bg-dark text-white py-5 text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Work Together Data Solutions</h1>
+            <p class="lead mb-4">
+                Expertise en sécurité, fiabilité et durabilité pour vos infrastructures.
+                Découvrez notre nouveau service de location de baies flexible et sécurisé.
+            </p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                {# Le lien ancre fonctionne car il pointe vers l'ID plus bas dans la page #}
+                <a href="#offres" class="btn btn-primary btn-lg px-4 gap-3">Voir nos offres</a>
+                <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-lg px-4">Créer un compte client</a>
+            </div>
+        </div>
+    </section>
+
+    {# 2. SECTION AVANTAGES : Pourquoi nous choisir ? #}
+    <section class="py-5">
+        <div class="container">
+            <div class="row text-center mb-4">
+                <div class="col">
+                    <h2 class="fw-bold">Pourquoi héberger chez nous ?</h2>
+                    <p class="text-muted">Des datacenters de pointe adaptés aux besoins de flexibilité et de sécurité</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="h5 card-title text-primary">Connectivité Ultrarapide</h3>
+                            <p class="card-text">
+                                Bénéficiez d'une infrastructure réseau haute performance et d'une redondance électrique
+                                pour garantir la disponibilité de vos services.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="h5 card-title text-primary">Sécurité Maximale</h3>
+                            <p class="card-text">
+                                Sécurité physique et électronique renforcée (protection des données sensibles)
+                                pour répondre aux menaces actuelles.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="h5 card-title text-primary">Économies & Flexibilité</h3>
+                            <p class="card-text">
+                                Évitez les investissements lourds. Louez uniquement l'espace nécessaire,
+                                de l'unité simple à la baie complète.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# 3. SECTION OFFRES : Le tableau des prix issu du PDF #}
+    <section class="bg-light py-5" id="offres">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+
+            {% for offer in offers %}
+                {# Logique d'affichage : On met en avant l'offre 'Start-up' (bordure et bouton bleu) #}
+                {% set isFeatured = (offer.label == 'Start-up') %}
+                {% set cardClass = isFeatured ? 'card h-100 shadow-sm border-primary' : 'card h-100 shadow-sm' %}
+                {% set headerClass = isFeatured ? 'card-header py-3 text-center text-white bg-primary border-primary' : 'card-header py-3 text-center bg-white' %}
+                {% set btnClass = isFeatured ? 'w-100 btn btn-lg btn-primary' : 'w-100 btn btn-lg btn-outline-primary' %}
+
+                <div class="col">
+                    <div class="{{ cardClass }}">
+                        <div class="{{ headerClass }}">
+                            <h4 class="my-0 fw-normal">{{ offer.label }}</h4>
+                        </div>
+                        <div class="card-body d-flex flex-column text-center">
+                            <h1 class="card-title pricing-card-title">
+                                {{ offer.price|number_format(0, ',', ' ') }} €
+                                <small class="text-muted fw-light">/mois</small>
+                            </h1>
+
+                            <ul class="list-unstyled mt-3 mb-4 flex-grow-1">
+                                <li>
+                                    <strong>{{ offer.unitsNumber }} Unité{{ offer.unitsNumber > 1 ? 's' : '' }}</strong>
+                                    {# Ajout des précisions selon le nombre d'unités #}
+                                    {% if offer.unitsNumber == 42 %} <br><small class="text-muted">(Baie complète)</small>
+                                    {% elseif offer.unitsNumber == 21 %} <br><small class="text-muted">(Demi-baie)</small>
+                                    {% endif %}
+                                </li>
+
+                                {# Affichage de la réduction si elle existe #}
+                                {% if offer.reduction > 0 %}
+                                    <li class="mt-2"><span class="badge bg-success">-{{ offer.reduction }}% de réduction</span></li>
+                                {% else %}
+                                    {# Espace vide pour garder l'alignement des cartes #}
+                                    <li class="mt-2">&nbsp;</li>
+                                {% endif %}
+
+                                {# Description contextuelle (Optionnel : vous pourriez ajouter un champ 'description' en BDD plus tard) #}
+                                <li class="mt-2 fst-italic text-muted">
+                                    {% if offer.label == 'Base' %}Idéal pour débuter
+                                    {% elseif offer.label == 'Start-up' %}Pour les équipes agiles
+                                    {% elseif offer.label == 'PME' %}Infrastructure robuste
+                                    {% elseif offer.label == 'Entreprise' %}Solution intégrale
+                                    {% endif %}
+                                </li>
+                            </ul>
+
+                            {# Lien de commande : On prépare le terrain pour passer l'ID de l'offre #}
+                            {# Pour l'instant on garde '#' pour ne pas créer d'erreur #}
+                            <a href="#" class="{{ btnClass }}">Choisir</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        Aucune offre commerciale n'est disponible pour le moment.
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </section>
+
+    {# 4. CTA FINAL (Appel à l'action) #}
+    <section class="py-5 text-center container">
+        <div class="row py-lg-5">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <h2 class="fw-light">Prêt à héberger vos équipements ?</h2>
+                <p class="lead text-muted">Rejoignez Work Together et concentrez-vous sur votre cœur de métier.</p>
+                <p>
+                    <a href="#" class="btn btn-primary my-2">Ouvrir un compte</a>
+                    <a href="#" class="btn btn-secondary my-2">Nous contacter</a>
+                </p>
+            </div>
+        </div>
+    </section>
+{% endblock %}

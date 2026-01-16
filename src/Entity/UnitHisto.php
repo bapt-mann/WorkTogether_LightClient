@@ -28,11 +28,11 @@ class UnitHisto
 
     #[ORM\ManyToOne(inversedBy: 'unitHistos')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?unit $unit = null;
+    private ?Unit $unit = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?state $state = null;
+    private ?State $state = null;
 
     public function getId(): ?int
     {

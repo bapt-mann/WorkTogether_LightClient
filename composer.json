@@ -75,6 +75,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
         "symfony/debug-bundle": "7.3.*",
         "symfony/maker-bundle": "^1.65",
         "symfony/monolog-bundle": "^3.0|^4.0",

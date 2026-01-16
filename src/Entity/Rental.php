@@ -23,11 +23,11 @@ class Rental
     private ?company $company = null;
 
     #[ORM\ManyToOne(inversedBy: 'rentals')]
-    private ?customer $customer = null;
+    private ?Customer $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'rentals')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?offer $offer = null;
+    private ?Offer $offer = null;
 
     /**
      * @var Collection<int, Unit>

@@ -24,13 +24,13 @@ class Intervention
 
     #[ORM\ManyToOne(inversedBy: 'interventions')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?technician $technician = null;
+    private ?Technician $technician = null;
 
     #[ORM\ManyToOne(inversedBy: 'interventions')]
-    private ?unit $unit = null;
+    private ?Unit $unit = null;
 
     #[ORM\ManyToOne(inversedBy: 'interventions')]
-    private ?bay $bay = null;
+    private ?Bay $bay = null;
 
     public function getId(): ?int
     {
@@ -97,12 +97,12 @@ class Intervention
         return $this;
     }
 
-    public function getBay(): ?bay
+    public function getBay(): ?Bay
     {
         return $this->bay;
     }
 
-    public function setBay(?bay $bay): static
+    public function setBay(?Bay $bay): static
     {
         $this->bay = $bay;
 
