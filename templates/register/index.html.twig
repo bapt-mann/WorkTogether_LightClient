@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello RegisterController!{% endblock %}
+{% block title %}Créer un compte{% endblock %}
 
 {% block body %}
 <style>
@@ -8,13 +8,14 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
-<div class="example-wrapper">
-    <h1>Hello</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/BTS/prog/workTogether/LightClient/src/Controller/RegisterController.php</code></li>
-        <li>Your template at <code>C:/BTS/prog/workTogether/LightClient/templates/register/index.html.twig</code></li>
-    </ul>
+<div>
+    <h1>Créer un compte</h1>
+    {{ form_start(registrationForm) }}
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.firstName, {Label: 'Prénom'}) }}
+        {{ form_row(registrationForm.lastName, {Label: 'Nom'}) }}
+        {{ form_row(registrationForm.plainPassword) }}
+        <button type="submit" class="btn"> Créer un compte </button>
+    {{ form_end(registrationForm) }}
 </div>
 {% endblock %}
