@@ -9,12 +9,12 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <h1>Connexion</h1>
+    {{ form_start(loginForm) }}
+    {{ form_row(loginForm.email) }}
+    {{ form_row(loginForm.password) }}
+    <button type="submit" class="btn"> Se connecter </button>
+    {{ form_end(loginForm) }}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/BTS/prog/workTogether/LightClient/src/Controller/ConnexionController.php</code></li>
-        <li>Your template at <code>C:/BTS/prog/workTogether/LightClient/templates/connexion/index.html.twig</code></li>
-    </ul>
 </div>
 {% endblock %}

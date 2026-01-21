@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +23,8 @@ final class RegisterController extends AbstractController
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
         VerifyEmailHelperInterface $verifyEmailHelper,
-        MailerInterface $mailer
+        MailerInterface $mailer,
+        UserRepository $userRepository,
 
     ): Response
     {
@@ -38,6 +40,20 @@ final class RegisterController extends AbstractController
                     $plainPassword
                 )
             );
+
+            $existingUser = $userRepository->findOneBy(['email' => $form->get('email')->getData()]);
+
+            if ($existingUser && $existingUser->isVerified() === true) {
+                $this->addFlash('error', 'Cet email est déjà utilisé.');
+                return $this->render('register/index.html.twig', [
+                    'registrationForm' => $form->createView(),
+                ]);
+            }
+            if ($existingUser && $existingUser->isVerified() === false) {
+                $this->addFlash('error', 'Cet email est déjà utilisé mais pas vérifié');
+                return $this->redirectToRoute('app_check_email');
+            }
+
             $user->setRoles(["ROLE_USER"]);
             $user->setIsVerified(false);
 
@@ -48,6 +64,7 @@ final class RegisterController extends AbstractController
                 'app_verify_email',
                 $user->getId(),
                 $user->getEmail(),
+                ['id'=> $user->getId()]
             );
             $email = (new Email())
                 ->from('ne_pas_repondre@workTogether.fr')
@@ -66,21 +83,18 @@ final class RegisterController extends AbstractController
         ]);
     }
 
-    #[Route('/verify/email', name: 'app_verify_email')]
+    #[Route('/verify/email/{id}', name: 'app_verify_email')]
     public function verifyUserEmail(
         Request $request,
         VerifyEmailHelperInterface $verifyEmailHelper,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        int $id
     ): Response
     {
-        $id = $request->get('id'); // L'ID est dans l'URL
-        if (null === $id) {
-            return $this->redirectToRoute('app_register');
-        }
-
         $user = $entityManager->getRepository(User::class)->find($id);
 
         if (null === $user) {
+            $this->addFlash('error', 'Utilisateur introuvable.'); // Ajouté
             return $this->redirectToRoute('app_register');
         }
 

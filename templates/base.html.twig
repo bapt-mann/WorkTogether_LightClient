@@ -13,6 +13,14 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label }}" style="background: salmon; color: white; padding: 10px; margin: 10px;">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
 {# --- BARRE DE NAVIGATION --- #}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
     <div class="container">
@@ -39,20 +47,22 @@
             {# J'ai mis des liens '#' pour l'instant car vos routes de login n'existent pas encore #}
             <div class="d-flex">
                 {# Bouton de login fictif #}
-                <a href="/register" class="btn btn-outline-light me-2">Connexion</a>
+                <a href="/login" class="btn btn-outline-light me-2">Connexion</a>
 
                 {# Bouton d'inscription fictif #}
-                <a href="#" class="btn btn-warning">Créer un compte</a>
+                <a href="/register" class="btn btn-warning">Créer un compte</a>
             </div>
         </div>
     </div>
 </nav>
 
 {# --- MESSAGES DE NOTIFICATION (FLASH) --- #}
-<div class="container">
+<div class="container mt-3">
+    <h2> MESSAGES FLASH</h2>
     {% for label, messages in app.flashes %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show">
+            {# Astuce : on transforme 'error' en 'danger' pour que Bootstrap comprenne #}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show">
                 {{ message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
