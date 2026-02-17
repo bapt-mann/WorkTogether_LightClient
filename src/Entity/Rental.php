@@ -20,7 +20,7 @@ class Rental
     private ?\DateTime $purchaseDate = null;
 
     #[ORM\ManyToOne(inversedBy: 'rentals')]
-    private ?company $company = null;
+    private ?Company $company = null;
 
     #[ORM\ManyToOne(inversedBy: 'rentals')]
     private ?Customer $customer = null;
@@ -57,12 +57,12 @@ class Rental
         return $this;
     }
 
-    public function getCompany(): ?company
+    public function getCompany(): ?Company
     {
         return $this->company;
     }
 
-    public function setCompany(?company $company): static
+    public function setCompany(?Company $company): static
     {
         $this->company = $company;
 

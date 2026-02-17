@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Espace Client - WorkTogether{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Bienvenue dans votre Espace Client</h1>
+
+        <div class="row">
+            {# --- COLONNE GAUCHE : INFOS & COMMANDES --- #}
+            <div class="col-md-4">
+                {# Gestion des données personnelles #}
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Mes Informations</h5>
+                    </div>
+                    <div class="card-body">
+                        {#<p><strong>Nom :</strong> {{ app.user.lastName }} {{ app.user.firstName }}</p>#}
+                        <p><strong>Email :</strong> {{ app.user.email }}</p>
+                        <hr>
+                        <a href="#" class="btn btn-sm btn-outline-primary w-100 mb-2">Modifier mon profil</a>
+                        <a href="#" class="btn btn-sm btn-outline-secondary w-100">Changer mon mot de passe</a>
+                    </div>
+                </div>
+
+                {# Gestion des commandes #}
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">Mes Commandes</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            {# Ici, on bouclera sur les commandes/rentals du client #}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Pack PME (21U)
+                                <span class="badge bg-success rounded-pill">Actif</span>
+                            </li>
+                        </ul>
+                        <div class="p-3">
+                            <a href="{{ path('app_order') }}" class="btn btn-warning btn-sm w-100">Nouvelle commande</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# --- COLONNE DROITE : GESTION DES UNITÉS & ÉTAT --- #}
+            <div class="col-md-8">
+                {# Visualisation de l'emplacement et état #}
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white d-flex justify-content-between">
+                        <h5 class="mb-0">Mes Unités dans le Datacenter</h5>
+                        <span class="badge bg-light text-dark">Total : 21 Unités</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">Visualisez l'état en temps réel de vos serveurs (B014-U06).</p>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Emplacement</th>
+                                    <th>Nom / Type</th>
+                                    <th>État</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {# Exemple d'une unité configurée #}
+                                <tr>
+                                    <td><strong>B014 - U01</strong></td>
+                                    <td>
+                                        <span class="badge" style="background-color: #007bff;">Serveur Web</span>
+                                        <br><small class="text-muted">Web-Prod-01</small>
+                                    </td>
+                                    <td><span class="text-success">● OK</span></td>
+                                    <td><button class="btn btn-sm btn-light border">Configurer</button></td>
+                                </tr>
+                                {# Exemple d'une unité avec incident #}
+                                <tr>
+                                    <td><strong>B014 - U02</strong></td>
+                                    <td>
+                                        <span class="badge" style="background-color: #198754;">Base de données</span>
+                                        <br><small class="text-muted">DB-Master</small>
+                                    </td>
+                                    <td><span class="text-danger">● Incident</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-outline-danger">Voir l'intervention</a></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {# Historique des interventions #}
+                <div class="mt-4">
+                    <h6>Historique récent des interventions</h6>
+                    <div class="alert alert-info py-2 small">
+                        <strong>12/02/2026 :</strong> Maintenance préventive sur la connectivité de la baie B014. Terminé à 10:00.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

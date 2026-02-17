@@ -100,7 +100,7 @@ final class RegisterController extends AbstractController
 
         // On valide le lien crypté
         try {
-            $verifyEmailHelper->validateEmailConfirmation(
+                $verifyEmailHelper->validateEmailConfirmation(
                 $request->getUri(),
                 $user->getId(),
                 $user->getEmail()
@@ -116,7 +116,7 @@ final class RegisterController extends AbstractController
         $entityManager->flush();
 
         $this->addFlash('success', 'Votre email a été vérifié ! Vous pouvez vous connecter.');
-        return $this->redirectToRoute('app_login'); // Ou app_home
+        return $this->redirectToRoute('app_security'); // Ou app_home
     }
 
     #[Route('/register/check-email', name: 'app_check_email')]

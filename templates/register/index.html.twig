@@ -1,21 +1,69 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer un compte{% endblock %}
+{% block title %}Rejoindre WorkTogether{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-5">
+        <div class="card shadow-lg border-0" style="max-width: 600px; width: 100%; border-radius: 15px; background: rgba(255, 255, 255, 0.95);">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-primary">Créer un compte client</h2>
+                    <p class="text-muted">Rejoignez WorkTogether Data Solutions pour gérer vos baies informatiques.</p>
+                </div>
 
-<div>
-    <h1>Créer un compte</h1>
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.firstName, {Label: 'Prénom'}) }}
-        {{ form_row(registrationForm.lastName, {Label: 'Nom'}) }}
-        {{ form_row(registrationForm.plainPassword) }}
-        <button type="submit" class="btn"> Créer un compte </button>
-    {{ form_end(registrationForm) }}
-</div>
+                {{ form_start(registrationForm, {'attr': {'class': 'needs-validation'}}) }}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold">Prénom</label>
+                        {{ form_widget(registrationForm.firstName, {'attr': {'class': 'form-control', 'placeholder': 'Jean'}}) }}
+                        {{ form_errors(registrationForm.firstName) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold">Nom</label>
+                        {{ form_widget(registrationForm.lastName, {'attr': {'class': 'form-control', 'placeholder': 'Dupont'}}) }}
+                        {{ form_errors(registrationForm.lastName) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Adresse Email Professionnelle</label>
+                    {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'contact@entreprise.com'}}) }}
+                    {{ form_errors(registrationForm.email) }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold text-uppercase">Mot de passe</label>
+                        {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control', 'placeholder': '••••••••'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold text-uppercase">Confirmation</label>
+                        {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control', 'placeholder': 'Répétez le mdp'}}) }}
+                    </div>
+                </div>
+
+                {# Affichage des erreurs globales du mot de passe (ex: ils ne correspondent pas) #}
+                <div class="text-danger small mb-3">
+                    {{ form_errors(registrationForm.plainPassword.first) }}
+                </div>
+
+                <div class="form-text small text-muted mb-4">
+                    <i class="bi bi-info-circle"></i> Le mot de passe doit contenir au moins 6 caractères.
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm fw-bold">
+                    CRÉER MON COMPTE
+                </button>
+
+                {{ form_end(registrationForm) }}
+
+                <div class="text-center mt-4">
+                    <hr class="text-muted">
+                    <p class="small text-muted mb-0">Déjà client ?</p>
+                    <a href="{{ path('app_login') }}" class="text-decoration-none fw-bold text-primary">Se connecter à l'espace client</a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

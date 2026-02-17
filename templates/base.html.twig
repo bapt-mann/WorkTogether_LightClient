@@ -44,31 +44,39 @@
             </ul>
 
             {# --- ZONE UTILISATEUR --- #}
-            {# J'ai mis des liens '#' pour l'instant car vos routes de login n'existent pas encore #}
             <div class="d-flex">
-                {# Bouton de login fictif #}
+                {# Bouton de login#}
                 <a href="/login" class="btn btn-outline-light me-2">Connexion</a>
 
-                {# Bouton d'inscription fictif #}
-                <a href="/register" class="btn btn-warning">Créer un compte</a>
+                {# Bouton d'inscription #}
+                <a href="/register" class="btn btn-warning me-2">Créer un compte</a>
+
+                {# Bouton Espace Client #}
+                {% if app.user %}
+                    <a href="/customerarea" class="btn" title="Espace Client">
+                        <img src="{{ asset('images/placeHolder_pp.png') }}" alt="Espace Client" style="width: 24px; height: 24px;">
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>
 </nav>
 
 {# --- MESSAGES DE NOTIFICATION (FLASH) --- #}
-<div class="container mt-3">
-    <h2> MESSAGES FLASH</h2>
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            {# Astuce : on transforme 'error' en 'danger' pour que Bootstrap comprenne #}
-            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+{% if app.environment == "dev" %}
+    <div class="container mt-3">
+        <h2> MESSAGES FLASH</h2>
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                {# Astuce : on transforme 'error' en 'danger' pour que Bootstrap comprenne #}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
-</div>
+    </div>
+{% endif %}
 
 {# --- CONTENU DE LA PAGE --- #}
 <main class="flex-grow-1">
