@@ -30,6 +30,9 @@ class Company
     #[ORM\OneToMany(targetEntity: Rental::class, mappedBy: 'company')]
     private Collection $rentals;
 
+    #[ORM\OneToOne(mappedBy: 'company', cascade: ['persist', 'remove'])]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->rentals = new ArrayCollection();
@@ -102,6 +105,28 @@ class Company
                 $rental->setCompany(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($user === null && $this->user !== null) {
+            $this->user->setCompany(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($user !== null && $user->getCompany() !== $this) {
+            $user->setCompany($this);
+        }
+
+        $this->user = $user;
 
         return $this;
     }
