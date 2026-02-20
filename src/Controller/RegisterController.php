@@ -14,6 +14,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use Symfony\Component\Form\FormError;
 
 final class RegisterController extends AbstractController
 {
@@ -34,6 +35,22 @@ final class RegisterController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = $form->get('plainPassword')->getData();
+
+            
+            // VÉRIFICATION DE LA COMPLEXITÉ DU MOT DE PASSE
+            // Minimum : 10 caractères, 2 majuscules, 2 minuscules, 2 chiffres, 1 caractère spécial
+            $regex = '/^(?=(.*[a-z]){2})(?=(.*[A-Z]){2})(?=(.*\d){2})(?=.*[^a-zA-Z0-9]).{10,}$/';
+            
+            if (!preg_match($regex, $plainPassword)) { // perform regualr expression match
+                $form->get('plainPassword')->addError(new FormError(
+                    'Le mot de passe doit contenir au moins 10 caractères, dont 2 minuscules, 2 majuscules, 2 chiffres et 1 caractère spécial.'
+                ));
+                
+                return $this->render('register/index.html.twig', [
+                    'registrationForm' => $form->createView(),
+                ]);
+            }
+
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
@@ -53,6 +70,43 @@ final class RegisterController extends AbstractController
                 $this->addFlash('error', 'Cet email est déjà utilisé mais pas vérifié');
                 return $this->redirectToRoute('app_check_email');
             }
+
+            // // --- LIAISON DU PROFIL CLIENT ---
+            // // Pour que l'Espace Client fonctionne, on crée automatiquement un profil Customer
+            // $customer = new \App\Entity\Customer();
+            // $customer->setLabel($user->getFirstName() . ' ' . $user->getLastName());
+            // $user->setCustomer($customer);
+            // //
+
+            // CREATION DU PROFIL (PARTICULIER OU ENTREPRISE)
+            $accountType = $form->get('accountType')->getData();
+
+            if ($accountType === 'company') {
+                $companyName = $form->get('companyName')->getData();
+                $siret = $form->get('siret')->getData();
+
+                // Sécurité
+                if (empty($companyName) || empty($siret)) {
+                    $this->addFlash('error', 'Veuillez renseigner le nom de l\'entreprise et le SIRET.');
+                    return $this->render('register/index.html.twig', [
+                        'registrationForm' => $form->createView(),
+                    ]);
+                }
+
+                $company = new \App\Entity\Company();
+                $company->setCompanyName($companyName);
+                $company->setSiret($siret);
+                $company->setLabel($companyName); // utilise le nom de l'entreprise comme label
+
+                $user->setCompany($company);
+            } else {
+                // C'est un client particulier (Customer)
+                $customer = new \App\Entity\Customer();
+                $customer->setLabel($user->getFirstName() . ' ' . $user->getLastName());
+                
+                $user->setCustomer($customer);
+            }
+
 
             $user->setRoles(["ROLE_USER"]);
             $user->setIsVerified(false);
