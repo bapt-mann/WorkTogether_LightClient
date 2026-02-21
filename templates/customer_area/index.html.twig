@@ -15,7 +15,8 @@
                         <h5 class="mb-0">Mes Informations</h5>
                     </div>
                     <div class="card-body">
-                        {#<p><strong>Nom :</strong> {{ app.user.lastName }} {{ app.user.firstName }}</p>#}
+                        {# On utilise les vraies données de app.user #}
+                        <p><strong>Nom :</strong> {{ app.user.firstName|capitalize }} {{ app.user.lastName|upper }}</p>
                         <p><strong>Email :</strong> {{ app.user.email }}</p>
                         <hr>
                         <a href="#" class="btn btn-sm btn-outline-primary w-100 mb-2">Modifier mon profil</a>
@@ -23,21 +24,28 @@
                     </div>
                 </div>
 
-                {# Gestion des commandes #}
+                {# Gestion des commandes (Locations / Rentals) #}
                 <div class="card shadow-sm">
                     <div class="card-header bg-dark text-white">
                         <h5 class="mb-0">Mes Commandes</h5>
                     </div>
                     <div class="card-body p-0">
                         <ul class="list-group list-group-flush">
-                            {# Ici, on bouclera sur les commandes/rentals du client #}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Pack PME (21U)
-                                <span class="badge bg-success rounded-pill">Actif</span>
-                            </li>
+                            {# Boucle sur les locations du client #}
+                            {% for rental in rentals %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {# On remonte au label de l'offre et au nombre d'unités #}
+                                    Pack {{ rental.offer.label }} ({{ rental.offer.unitsNumber }}U)
+                                    <span class="badge bg-success rounded-pill">Actif</span>
+                                </li>
+                            {% else %}
+                                <li class="list-group-item text-muted text-center small">
+                                    Aucune location en cours.
+                                </li>
+                            {% endfor %}
                         </ul>
                         <div class="p-3">
-                            <a href="{{ path('app_order') }}" class="btn btn-warning btn-sm w-100">Nouvelle commande</a>
+                            <a href="{{ path('app_home') }}#offres" class="btn btn-warning btn-sm w-100">Nouvelle commande</a>
                         </div>
                     </div>
                 </div>
@@ -46,57 +54,82 @@
             {# --- COLONNE DROITE : GESTION DES UNITÉS & ÉTAT --- #}
             <div class="col-md-8">
                 {# Visualisation de l'emplacement et état #}
-                <div class="card shadow-sm">
-                    <div class="card-header bg-secondary text-white d-flex justify-content-between">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Mes Unités dans le Datacenter</h5>
-                        <span class="badge bg-light text-dark">Total : 21 Unités</span>
+                        <span class="badge bg-light text-dark">Total : {{ units|length }} Unités</span>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted small">Visualisez l'état en temps réel de vos serveurs (B014-U06).</p>
-
                         <div class="table-responsive">
                             <table class="table table-hover align-middle">
                                 <thead class="table-light">
                                 <tr>
                                     <th>Emplacement</th>
-                                    <th>Nom / Type</th>
+                                    <th>Taille</th>
                                     <th>État</th>
                                     <th>Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {# Exemple d'une unité configurée #}
-                                <tr>
-                                    <td><strong>B014 - U01</strong></td>
-                                    <td>
-                                        <span class="badge" style="background-color: #007bff;">Serveur Web</span>
-                                        <br><small class="text-muted">Web-Prod-01</small>
-                                    </td>
-                                    <td><span class="text-success">● OK</span></td>
-                                    <td><button class="btn btn-sm btn-light border">Configurer</button></td>
-                                </tr>
-                                {# Exemple d'une unité avec incident #}
-                                <tr>
-                                    <td><strong>B014 - U02</strong></td>
-                                    <td>
-                                        <span class="badge" style="background-color: #198754;">Base de données</span>
-                                        <br><small class="text-muted">DB-Master</small>
-                                    </td>
-                                    <td><span class="text-danger">● Incident</span></td>
-                                    <td><a href="#" class="btn btn-sm btn-outline-danger">Voir l'intervention</a></td>
-                                </tr>
+                                {# Boucle sur les unités du client #}
+                                {% for unit in units %}
+                                    <tr>
+                                        {# On affiche la baie puis l'unité (Ex: B014 - U06) #}
+                                        <td><strong>{{ unit.bay.label }} - {{ unit.label }}</strong></td>
+                                        <td>
+                                            <span class="badge bg-dark">{{ unit.size }} U</span>
+                                        </td>
+                                        <td>
+                                            {# Affichage conditionnel selon l'état de l'unité #}
+                                            {% if unit.state.label == 'OK' %}
+                                                <span class="text-success">● {{ unit.state.label }}</span>
+                                            {% elseif unit.state.label == 'Incident' %}
+                                                <span class="text-danger fw-bold">● {{ unit.state.label }}</span>
+                                            {% else %}
+                                                <span class="text-warning">● {{ unit.state.label }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if unit.state.label == 'Incident' %}
+                                                <a href="#" class="btn btn-sm btn-outline-danger">Détails Incident</a>
+                                            {% else %}
+                                                <button class="btn btn-sm btn-light border">Configurer</button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-3">
+                                            Vous n'avez pas encore d'unités attribuées.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                {# Historique des interventions #}
-                <div class="mt-4">
+                {# Historique des interventions liées aux unités du client #}
+                <div>
                     <h6>Historique récent des interventions</h6>
-                    <div class="alert alert-info py-2 small">
-                        <strong>12/02/2026 :</strong> Maintenance préventive sur la connectivité de la baie B014. Terminé à 10:00.
-                    </div>
+                    {% set hasInterventions = false %}
+                    
+                    {# On boucle sur les unités, puis sur leurs interventions #}
+                    {% for unit in units %}
+                        {% for intervention in unit.interventions %}
+                            {% set hasInterventions = true %}
+                            <div class="alert alert-info py-2 small mb-2">
+                                <strong>{{ intervention.startDate|date('d/m/Y H:i') }} :</strong> 
+                                {{ intervention.description|default('Intervention technique en cours') }} sur {{ unit.bay.label }}-{{ unit.label }}.
+                                (Technicien: {{ intervention.technician.label|default('Non assigné') }})
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {% if not hasInterventions %}
+                        <p class="text-muted small">Aucune intervention enregistrée sur vos équipements.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
