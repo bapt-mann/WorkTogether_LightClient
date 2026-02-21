@@ -51,6 +51,9 @@ class Unit
     #[ORM\JoinColumn(nullable: false)]
     private ?State $state = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
+
     public function __construct()
     {
         $this->interventions = new ArrayCollection();
@@ -209,6 +212,18 @@ class Unit
     public function setState(?state $state): static
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

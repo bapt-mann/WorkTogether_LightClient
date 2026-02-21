@@ -3,7 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Bay;
-use App\Entity\Customer;
+use App\Entity\Company;
 use App\Entity\Intervention;
 use App\Entity\Offer;
 use App\Entity\Rental;
@@ -60,15 +60,22 @@ class AppFixtures extends Fixture
         }
 
         // 3. CRÉATION DU PROFIL CLIENT "JEAN"
-        $customerJean = new Customer();
-        $customerJean->setLabel('Jean Dupont (Particulier)');
+        $customerJean = new Company();
+        $customerJean->setCompanyName('Jean Dupont');
+        $customerJean->setSiret('98765432109876');
         $manager->persist($customerJean);
 
-        // 4. CRÉATION D'UNE LOCATION (RENTAL) POUR JEAN
+        $company = new Company();
+        $company->setCompanyName('Entreprise SA');
+        $company->setSiret('12345678901234');
+        $manager->persist($company);
+
+
+        // 4. CRÉATION D'UNE LOCATION 
         $rentalJean = new Rental();
-        $rentalJean->setCustomer($customerJean);
-        $rentalJean->setOffer($offerPME); // Pack PME (21U)
-        $rentalJean->setPurchaseDate(new \DateTime('-15 days')); // Acheté il y a 15 jours
+        $rentalJean->setCompany($customerJean);
+        $rentalJean->setOffer($offerPME);
+        $rentalJean->setPurchaseDate(new \DateTime('-15 days')); // Achetée il y a 15 jours
         $manager->persist($rentalJean);
 
         // 5. CRÉATION D'UN TECHNICIEN
@@ -91,6 +98,7 @@ class AppFixtures extends Fixture
                 $unit->setLabel('U' . str_pad($j, 2, '0', STR_PAD_LEFT));
                 $unit->setSize('1.00');
                 $unit->setBay($bay);
+                $unit->setDescription('oui');
 
                 // SCÉNARIO : On attribue les 21 premières unités de la baie B014 à Jean
                 if ($i === 14 && $j <= 21) {
@@ -126,15 +134,22 @@ class AppFixtures extends Fixture
         $client = new User();
         $client->setEmail('client@entreprise.fr');
         $client->setRoles(['ROLE_USER']);
-        $client->setFirstName('Jean');
-        $client->setLastName('Dupont');
+        //$client->setFirstName('Jean');
+        //$client->setLastName('Dupont');
         $client->setIsVerified(true);
         $client->setPassword($this->hasher->hashPassword($client, 'client123'));
+        $client->setCompany($customerJean); 
         
-        // ATTENTION : Cette ligne nécessite que tu aies bien fait la relation OneToOne 
-        // entre User et Customer comme expliqué au message précédent !
-        $client->setCustomer($customerJean); 
-        
+        $manager->persist($client);
+
+        $client = new User();
+        $client->setEmail('entreprise@entreprise.fr');
+        $client->setRoles(['ROLE_USER']);
+        $client->setFirstName('Jane');
+        $client->setIsVerified(true);
+        $client->setPassword($this->hasher->hashPassword($client, 'client123'));
+        $client->setCompany($company);
+
         $manager->persist($client);
 
         // Enregistrement final en BDD

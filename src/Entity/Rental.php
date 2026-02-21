@@ -23,9 +23,6 @@ class Rental
     private ?Company $company = null;
 
     #[ORM\ManyToOne(inversedBy: 'rentals')]
-    private ?Customer $customer = null;
-
-    #[ORM\ManyToOne(inversedBy: 'rentals')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Offer $offer = null;
 
@@ -69,24 +66,12 @@ class Rental
         return $this;
     }
 
-    public function getCustomer(): ?customer
-    {
-        return $this->customer;
-    }
-
-    public function setCustomer(?customer $customer): static
-    {
-        $this->customer = $customer;
-
-        return $this;
-    }
-
-    public function getOffer(): ?offer
+    public function getOffer(): ?Offer
     {
         return $this->offer;
     }
 
-    public function setOffer(?offer $offer): static
+    public function setOffer(?Offer $offer): static
     {
         $this->offer = $offer;
 

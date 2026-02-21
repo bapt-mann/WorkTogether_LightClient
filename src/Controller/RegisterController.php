@@ -71,41 +71,25 @@ final class RegisterController extends AbstractController
                 return $this->redirectToRoute('app_check_email');
             }
 
-            // // --- LIAISON DU PROFIL CLIENT ---
-            // // Pour que l'Espace Client fonctionne, on crée automatiquement un profil Customer
-            // $customer = new \App\Entity\Customer();
-            // $customer->setLabel($user->getFirstName() . ' ' . $user->getLastName());
-            // $user->setCustomer($customer);
-            // //
-
             // CREATION DU PROFIL (PARTICULIER OU ENTREPRISE)
-            $accountType = $form->get('accountType')->getData();
+            $companyName = $form->get('companyName')->getData();
+            $siret = $form->get('siret')->getData();
 
-            if ($accountType === 'company') {
-                $companyName = $form->get('companyName')->getData();
-                $siret = $form->get('siret')->getData();
-
-                // Sécurité
-                if (empty($companyName) || empty($siret)) {
-                    $this->addFlash('error', 'Veuillez renseigner le nom de l\'entreprise et le SIRET.');
-                    return $this->render('register/index.html.twig', [
-                        'registrationForm' => $form->createView(),
-                    ]);
-                }
-
-                $company = new \App\Entity\Company();
-                $company->setCompanyName($companyName);
-                $company->setSiret($siret);
-                $company->setLabel($companyName); // utilise le nom de l'entreprise comme label
-
-                $user->setCompany($company);
-            } else {
-                // C'est un client particulier (Customer)
-                $customer = new \App\Entity\Customer();
-                $customer->setLabel($user->getFirstName() . ' ' . $user->getLastName());
-                
-                $user->setCustomer($customer);
+            // Sécurité
+            if (empty($companyName) || empty($siret)) {
+                $this->addFlash('error', 'Veuillez renseigner le nom de l\'entreprise et le SIRET.');
+                return $this->render('register/index.html.twig', [
+                    'registrationForm' => $form->createView(),
+                ]);
             }
+
+            $company = new \App\Entity\Company();
+            $company->setCompanyName($companyName);
+            $company->setSiret($siret);
+            $company->setLabel($companyName); // utilise le nom de l'entreprise comme label
+
+            $user->setCompany($company);
+            
 
 
             $user->setRoles(["ROLE_USER"]);

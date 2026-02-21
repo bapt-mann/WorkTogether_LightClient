@@ -16,9 +16,6 @@ class Company
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $label = null;
-
-    #[ORM\Column(length: 255)]
     private ?string $companyName = null;
 
     #[ORM\Column(length: 255)]
@@ -41,18 +38,6 @@ class Company
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getLabel(): ?string
-    {
-        return $this->label;
-    }
-
-    public function setLabel(string $label): static
-    {
-        $this->label = $label;
-
-        return $this;
     }
 
     public function getCompanyName(): ?string

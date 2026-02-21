@@ -19,18 +19,10 @@ final class CustomerAreaController extends AbstractController
         $rentals = [];
         $profileType = 'Inconnu';
 
-        // Si l'utilisateur est un particulier (Customer)
-        if ($user->getCustomer()) {
-            $rentals = $user->getCustomer()->getRentals();
-            $profileType = 'Particulier';
-        } 
-        // 2. Sinon, si c'est une entreprise (Company)
-        elseif ($user->getCompany()) {
-            $rentals = $user->getCompany()->getRentals();
-            $profileType = 'Entreprise';
-        }
-
-        // 3. On récupère les unités de TOUTES les locations
+        $rentals = $user->getCompany()->getRentals();
+        $profileType = 'Entreprise';
+        
+        // On récupère les unités de toutes les locations
         $units = [];
         foreach ($rentals as $rental) {
             foreach ($rental->getUnits() as $unit) {

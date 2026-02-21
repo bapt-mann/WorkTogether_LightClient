@@ -1,20 +1,88 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PurchaseController!{% endblock %}
+{% block title %}Récapitulatif de commande - WorkTogether{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4"><i class="bi bi-cart-check"></i> Finaliser votre commande</h2>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+            <div class="row">
+                {# COLONNE GAUCHE : DÉTAILS DE L'OFFRE #}
+                <div class="col-md-7">
+                    <div class="card shadow-sm mb-4 border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Détails de l'abonnement</h5>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title text-primary">Pack {{ offer.label }}</h3>
+                            <p class="text-muted small mb-4">Location d'espace en Datacenter WorkTogether</p>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/BTS/prog/workTogether/LightClient/src/Controller/PurchaseController.php</code></li>
-        <li>Your template at <code>C:/BTS/prog/workTogether/LightClient/templates/purchase/index.html.twig</code></li>
-    </ul>
+                            <ul class="list-group list-group-flush mb-3">
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    Espace alloué
+                                    <span class="badge bg-dark rounded-pill fs-6">{{ offer.unitsNumber }} Unités (U)</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    Durée de l'engagement
+                                    <span class="fw-bold">{{ offer.durationInDays }} Jours</span>
+                                </li>
+                                {% if offer.reduction > 0 %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 text-success">
+                                    Réduction appliquée
+                                    <span class="fw-bold">- {{ offer.reduction }} %</span>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                {# COLONNE DROITE : PAIEMENT / FACTURATION #}
+                <div class="col-md-5">
+                    <div class="card shadow-sm bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Total à régler</h5>
+                            
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Sous-total HT</span>
+                                <span>{{ offer.price }} €</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3 text-muted small">
+                                <span>TVA (20%)</span>
+                                <span>{{ (offer.price * 0.2)|number_format(2, '.', ',') }} €</span>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="d-flex justify-content-between mb-4">
+                                <span class="fs-5 fw-bold">Total TTC</span>
+                                <span class="fs-4 fw-bold text-primary">{{ (offer.price * 1.2)|number_format(2, '.', ',') }} €</span>
+                            </div>
+
+                            {# FORMULAIRE DE CONFIRMATION #}
+                            <form action="{{ path('app_purchase_confirm', {'id': offer.id}) }}" method="POST">
+                                <div class="form-check mb-3 small">
+                                    <input class="form-check-input" type="checkbox" value="" id="cgv" required>
+                                    <label class="form-check-label text-muted" for="cgv">
+                                        J'accepte les Conditions Générales de Vente et d'Hébergement.
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-success w-100 btn-lg">
+                                    <i class="bi bi-credit-card"></i> Confirmer la commande
+                                </button>
+                            </form>
+                            
+                            <p class="text-center text-muted small mt-3 mb-0">
+                                <i class="bi bi-shield-lock"></i> Paiement sécurisé
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

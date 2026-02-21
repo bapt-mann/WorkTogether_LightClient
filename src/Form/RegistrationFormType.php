@@ -17,16 +17,6 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('accountType', ChoiceType::class, [
-                'mapped' => false, // Ne correspond à aucune colonne dans la table User
-                'choices' => [
-                    'Particulier' => 'customer',
-                    'Entreprise' => 'company',
-                ],
-                'expanded' => true, // Affiche des boutons radio
-                'multiple' => false,
-                'data' => 'customer', // Particulier par défaut
-            ])
             ->add('companyName', TextType::class, [
                 'mapped' => false,
                 'required' => false, // Géré par Javascript

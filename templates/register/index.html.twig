@@ -32,21 +32,7 @@
                     {{ form_errors(registrationForm.email) }}
                 </div>
 
-                {# Boutons Radio pour le choix du type de compte #}
-                <div class="mb-4 text-center">
-                    <label class="form-label small fw-bold text-uppercase d-block mb-3">Vous êtes :</label>
-                    <div class="d-flex justify-content-center gap-4">
-                        {% for child in registrationForm.accountType %}
-                            <div class="form-check form-check-inline">
-                                {# Le onclick déclenche la fonction JS à chaque clic #}
-                                {{ form_widget(child, {'attr': {'class': 'form-check-input', 'onclick': 'toggleCompanyFields()'}}) }}
-                                {{ form_label(child, null, {'label_attr': {'class': 'form-check-label fw-bold small'}}) }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                {# Les champs Entreprise (Cachés par défaut) #}
+                {# Les champs Entreprise #}
                 <div id="company-fields" style="display: none;" class="p-3 bg-light rounded border mb-4">
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -94,33 +80,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        function toggleCompanyFields() {
-            // On cherche le bouton radio "company"
-            const companyRadio = document.querySelector('input[name="registration_form[accountType]"][value="company"]');
-            const companyFields = document.getElementById('company-fields');
-            const companyNameInput = document.getElementById('registration_form_companyName');
-            const siretInput = document.getElementById('registration_form_siret');
-
-            if (companyRadio && companyRadio.checked) {
-                // Afficher la section entreprise
-                companyFields.style.display = 'block';
-                // Rendre les champs obligatoires pour la validation HTML5
-                companyNameInput.setAttribute('required', 'required');
-                siretInput.setAttribute('required', 'required');
-            } else {
-                // Cacher la section entreprise
-                companyFields.style.display = 'none';
-                // Retirer l'obligation
-                companyNameInput.removeAttribute('required');
-                siretInput.removeAttribute('required');
-            }
-        }
-        
-        // On lance la fonction au chargement de la page (au cas où la page se recharge avec une erreur de formulaire)
-        document.addEventListener("DOMContentLoaded", function() {
-            toggleCompanyFields();
-        });
-    </script>
 {% endblock %}
