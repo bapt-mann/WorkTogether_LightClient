@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Offer;
 use App\Entity\Rental;
+use App\Entity\Unit;
 use App\Repository\UnitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\HttpFoundation\Request;
 
 final class PurchaseController extends AbstractController
 {
@@ -70,6 +72,42 @@ final class PurchaseController extends AbstractController
 
         $this->addFlash('success', 'Félicitations ! Votre commande pour le pack ' . $offer->getLabel() . ' est validée. Vous pouvez maintenant configurer vos serveurs.');
         
+        return $this->redirectToRoute('app_customer_area');
+    }
+
+    #[Route('/unit/configure/{id}', name: 'app_unit_configure', methods: ['POST'])]
+    #[IsGranted("ROLE_USER")]
+    public function configureUnit(
+        Unit $unit, 
+        Request $request, 
+        EntityManagerInterface $em
+    ): Response
+    {
+        // Vérifier que l'utilisateur connecté est bien le propriétaire de l'unité
+        $userCompany = $this->getUser()->getCompany();
+        $unitCompany = $unit->getRental() ? $unit->getRental()->getCompany() : null;
+
+        if ($userCompany !== $unitCompany) {
+            $this->addFlash('error', 'Accès refusé. Cette unité ne vous appartient pas.');
+            return $this->redirectToRoute('app_customer_area');
+        }
+
+        // Récupérer les données envoyées par la Modale via l'attribut "name" des inputs
+        $newLabel = $request->request->get('label');
+        $newDescription = $request->request->get('description');
+
+        // Mettre à jour l'entité
+        if ($newLabel && $newDescription) {
+            $unit->setLabel($newLabel);
+            $unit->setDescription($newDescription);
+            $em->flush();
+
+            $this->addFlash('success', 'La configuration du serveur a été mise à jour avec succès !');
+        } else {
+            $this->addFlash('error', 'Veuillez remplir tous les champs.');
+        }
+
+        // Rediriger vers l'espace client pour voir le résultat immédiatement
         return $this->redirectToRoute('app_customer_area');
     }
 }

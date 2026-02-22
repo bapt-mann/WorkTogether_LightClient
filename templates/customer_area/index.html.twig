@@ -51,7 +51,7 @@
                 </div>
             </div>
 
-            {# --- COLONNE DROITE : GESTION DES UNITÉS & ÉTAT --- #}
+            {# --- COLONNE DROITE : GESTION DES UNITÉS ET ÉTAT --- #}
             <div class="col-md-8">
                 {# Visualisation de l'emplacement et état #}
                 <div class="card shadow-sm mb-4">
@@ -59,8 +59,7 @@
                         <h5 class="mb-0">Mes Unités dans le Datacenter</h5>
                         <span class="badge bg-light text-dark">Total : {{ units|length }} Unités</span>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
+                   <div class="table-responsive">
                             <table class="table table-hover align-middle">
                                 <thead class="table-light">
                                 <tr>
@@ -71,16 +70,14 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {# Boucle sur les unités du client #}
+                                {# 1ÈRE BOUCLE : UNIQUEMENT LES LIGNES DU TABLEAU (TR) #}
                                 {% for unit in units %}
                                     <tr>
-                                        {# On affiche la baie puis l'unité (Ex: B014 - U06) #}
                                         <td><strong>{{ unit.bay.label }} - {{ unit.label }}</strong></td>
                                         <td>
                                             <span class="badge bg-dark">{{ unit.size }} U</span>
                                         </td>
                                         <td>
-                                            {# Affichage conditionnel selon l'état de l'unité #}
                                             {% if unit.state.label == 'OK' %}
                                                 <span class="text-success">● {{ unit.state.label }}</span>
                                             {% elseif unit.state.label == 'Incident' %}
@@ -91,9 +88,13 @@
                                         </td>
                                         <td>
                                             {% if unit.state.label == 'Incident' %}
-                                                <a href="#" class="btn btn-sm btn-outline-danger">Détails Incident</a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#incidentModal{{ unit.id }}">
+                                                    <i class="bi bi-exclamation-triangle"></i> Détails Incident
+                                                </button>
                                             {% else %}
-                                                <button class="btn btn-sm btn-light border">Configurer</button>
+                                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#configModal{{ unit.id }}">
+                                                    <i class="bi bi-gear"></i> Configurer
+                                                </button>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -109,6 +110,41 @@
                         </div>
                     </div>
                 </div>
+
+                {# 2ÈME BOUCLE : ON GÉNÈRE LES MODALES #}
+                {% for unit in units %}
+                    <div class="modal fade" id="configModal{{ unit.id }}" tabindex="-1" aria-labelledby="configModalLabel{{ unit.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-dark text-white">
+                                    <h5 class="modal-title" id="configModalLabel{{ unit.id }}">Configuration : {{ unit.bay.label }} - {{ unit.label }}</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                
+                                <form action="{{ path('app_unit_configure', {'id': unit.id}) }}" method="POST">
+                                    <div class="modal-body">
+                                        <p class="small text-muted mb-4">Personnalisez les informations de votre serveur pour mieux le retrouver dans votre infrastructure.</p>
+                                        
+                                        <div class="mb-3">
+                                            <label for="label{{ unit.id }}" class="form-label fw-bold">Nom du serveur (Label)</label>
+                                            <input type="text" class="form-control" id="label{{ unit.id }}" name="label" value="{{ unit.label }}" required placeholder="Ex: Serveur Web Principal">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="description{{ unit.id }}" class="form-label fw-bold">Description / Rôle</label>
+                                            <textarea class="form-control" id="description{{ unit.id }}" name="description" rows="3" required placeholder="Ex: Héberge le site vitrine et le blog.">{% if unit.description is defined %}{{ unit.description }}{% endif %}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer bg-light">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                        <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Sauvegarder</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                {# FIN DES MODALES #}
 
                 {# Historique des interventions liées aux unités du client #}
                 <div>
