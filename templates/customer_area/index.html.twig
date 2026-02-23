@@ -64,7 +64,6 @@
                                 <thead class="table-light">
                                 <tr>
                                     <th>Emplacement</th>
-                                    <th>Taille</th>
                                     <th>État</th>
                                     <th>Actions</th>
                                 </tr>
@@ -74,9 +73,6 @@
                                 {% for unit in units %}
                                     <tr>
                                         <td><strong>{{ unit.bay.label }} - {{ unit.label }}</strong></td>
-                                        <td>
-                                            <span class="badge bg-dark">{{ unit.size }} U</span>
-                                        </td>
                                         <td>
                                             {% if unit.state.label == 'OK' %}
                                                 <span class="text-success">● {{ unit.state.label }}</span>
@@ -111,38 +107,90 @@
                     </div>
                 </div>
 
-                {# 2ÈME BOUCLE : ON GÉNÈRE LES MODALES #}
-                {% for unit in units %}
-                    <div class="modal fade" id="configModal{{ unit.id }}" tabindex="-1" aria-labelledby="configModalLabel{{ unit.id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header bg-dark text-white">
-                                    <h5 class="modal-title" id="configModalLabel{{ unit.id }}">Configuration : {{ unit.bay.label }} - {{ unit.label }}</h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                
-                                <form action="{{ path('app_unit_configure', {'id': unit.id}) }}" method="POST">
+                {# GÉNÈRE LES MODALES #}
+                {% for unit in units %}{# --- MODALE INCIDENT (Uniquement si l'unité est en panne) --- #}
+                    {% if unit.state.label == 'Incident' %}
+                        <div class="modal fade" id="incidentModal{{ unit.id }}" tabindex="-1" aria-labelledby="incidentModalLabel{{ unit.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content border-danger">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title" id="incidentModalLabel{{ unit.id }}">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> Incident : {{ unit.bay.label }} - {{ unit.label }}
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    
                                     <div class="modal-body">
-                                        <p class="small text-muted mb-4">Personnalisez les informations de votre serveur pour mieux le retrouver dans votre infrastructure.</p>
+                                        <p class="text-danger fw-bold mb-4">Un dysfonctionnement a été détecté sur cet équipement.</p>
                                         
-                                        <div class="mb-3">
-                                            <label for="label{{ unit.id }}" class="form-label fw-bold">Nom du serveur (Label)</label>
-                                            <input type="text" class="form-control" id="label{{ unit.id }}" name="label" value="{{ unit.label }}" required placeholder="Ex: Serveur Web Principal">
+                                        <h6 class="text-uppercase small text-muted fw-bold">Suivi des interventions :</h6>
+                                        
+                                        {% set unitHasIntervention = false %}
+                                        <div class="list-group mt-2">
+                                            {# On liste toutes les interventions pour CETTE unité spécifique #}
+                                            {% for intervention in unit.interventions %}
+                                                {% set unitHasIntervention = true %}
+                                                <div class="list-group-item list-group-item-danger flex-column align-items-start">
+                                                    <div class="d-flex w-100 justify-content-between mb-1">
+                                                        <strong class="mb-1">Intervention technique</strong>
+                                                        <small>{{ intervention.startDate|date('d/m/Y H:i') }}</small>
+                                                    </div>
+                                                    <p class="mb-1 small">{{ intervention.description|default('En cours de diagnostic par nos techniciens.') }}</p>
+                                                    <small class="text-muted">Technicien : {{ intervention.technician.label|default('Non assigné') }}</small>
+                                                </div>
+                                            {% endfor %}
                                         </div>
                                         
-                                        <div class="mb-3">
-                                            <label for="description{{ unit.id }}" class="form-label fw-bold">Description / Rôle</label>
-                                            <textarea class="form-control" id="description{{ unit.id }}" name="description" rows="3" required placeholder="Ex: Héberge le site vitrine et le blog.">{% if unit.description is defined %}{{ unit.description }}{% endif %}</textarea>
-                                        </div>
+                                        {# Si le technicien n'a pas encore créé l'intervention dans le système #}
+                                        {% if not unitHasIntervention %}
+                                            <div class="alert alert-warning mt-3 small">
+                                                <i class="bi bi-hourglass-split"></i> L'incident vient d'être remonté. Un technicien va être assigné très prochainement pour un diagnostic.
+                                            </div>
+                                        {% endif %}
                                     </div>
                                     <div class="modal-footer bg-light">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                        <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Sauvegarder</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                        <a href="mailto:support@worktogether.fr?subject=Urgence : Incident sur Unité {{ unit.label }}" class="btn btn-danger">
+                                            <i class="bi bi-envelope"></i> Contacter le support
+                                        </a>
                                     </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {# --- FIN MODALE INCIDENT --- #}
+
+                    {% else %}
+                        <div class="modal fade" id="configModal{{ unit.id }}" tabindex="-1" aria-labelledby="configModalLabel{{ unit.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-dark text-white">
+                                        <h5 class="modal-title" id="configModalLabel{{ unit.id }}">Configuration : {{ unit.bay.label }} - {{ unit.label }}</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    
+                                    <form action="{{ path('app_unit_configure', {'id': unit.id}) }}" method="POST">
+                                        <div class="modal-body">
+                                            <p class="small text-muted mb-4">Personnalisez les informations de votre serveur pour mieux le retrouver dans votre infrastructure.</p>
+                                            
+                                            <div class="mb-3">
+                                                <label for="label{{ unit.id }}" class="form-label fw-bold">Nom de l'unité (Label)</label>
+                                                <input type="text" class="form-control" id="label{{ unit.id }}" name="label" value="{{ unit.label }}" required placeholder="Ex: Serveur Web Principal">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="description{{ unit.id }}" class="form-label fw-bold">Description / Rôle</label>
+                                                <textarea class="form-control" id="description{{ unit.id }}" name="description" rows="3" required placeholder="Ex: Héberge le site vitrine et le blog.">{% if unit.description is defined %}{{ unit.description }}{% endif %}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer bg-light">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Sauvegarder</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endfor %}
                 {# FIN DES MODALES #}
 

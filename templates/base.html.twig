@@ -55,6 +55,7 @@
                         {# Affiche le prénom du client #}
                         <strong>{{ app.user.firstName|capitalize }}</strong>
                     </a>
+                    <a href="/logout" class="btn btn-outline-light ms-3">Déconnexion</a>
                 {% else %}
                     {# Bouton de login#}
                     <a href="/login" class="btn btn-outline-light me-2">Connexion</a>
