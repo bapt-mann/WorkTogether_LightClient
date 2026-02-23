@@ -7,215 +7,27 @@
         <h1 class="mb-4">Bienvenue dans votre Espace Client</h1>
 
         <div class="row">
-            {# --- COLONNE GAUCHE : INFOS & COMMANDES --- #}
+            {# --- COLONNE GAUCHE --- #}
             <div class="col-md-4">
-                {# Gestion des données personnelles #}
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Mes Informations</h5>
-                    </div>
-                    <div class="card-body">
-                        {# On utilise les vraies données de app.user #}
-                        <p><strong>Nom :</strong> {{ app.user.firstName|capitalize }} {{ app.user.lastName|upper }}</p>
-                        <p><strong>Email :</strong> {{ app.user.email }}</p>
-                        <hr>
-                        <a href="#" class="btn btn-sm btn-outline-primary w-100 mb-2">Modifier mon profil</a>
-                        <a href="#" class="btn btn-sm btn-outline-secondary w-100">Changer mon mot de passe</a>
-                    </div>
-                </div>
+                {# Inclusion du bloc "Mes Informations" #}
+                {{ include('customer_area/_partials/_user_info.html.twig') }}
 
-                {# Gestion des commandes (Locations / Rentals) #}
-                <div class="card shadow-sm">
-                    <div class="card-header bg-dark text-white">
-                        <h5 class="mb-0">Mes Commandes</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <ul class="list-group list-group-flush">
-                            {# Boucle sur les locations du client #}
-                            {% for rental in rentals %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {# On remonte au label de l'offre et au nombre d'unités #}
-                                    Pack {{ rental.offer.label }} ({{ rental.offer.unitsNumber }}U)
-                                    <span class="badge bg-success rounded-pill">Actif</span>
-                                </li>
-                            {% else %}
-                                <li class="list-group-item text-muted text-center small">
-                                    Aucune location en cours.
-                                </li>
-                            {% endfor %}
-                        </ul>
-                        <div class="p-3">
-                            <a href="{{ path('app_home') }}#offres" class="btn btn-warning btn-sm w-100">Nouvelle commande</a>
-                        </div>
-                    </div>
-                </div>
+                {# Inclusion du bloc "Mes Commandes" #}
+                {{ include('customer_area/_partials/_orders.html.twig') }}
             </div>
 
-            {# --- COLONNE DROITE : GESTION DES UNITÉS ET ÉTAT --- #}
+            {# --- COLONNE DROITE --- #}
             <div class="col-md-8">
-                {# Visualisation de l'emplacement et état #}
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Mes Unités dans le Datacenter</h5>
-                        <span class="badge bg-light text-dark">Total : {{ units|length }} Unités</span>
-                    </div>
-                   <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-light">
-                                <tr>
-                                    <th>Emplacement</th>
-                                    <th>État</th>
-                                    <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {# 1ÈRE BOUCLE : UNIQUEMENT LES LIGNES DU TABLEAU (TR) #}
-                                {% for unit in units %}
-                                    <tr>
-                                        <td><strong>{{ unit.bay.label }} - {{ unit.label }}</strong></td>
-                                        <td>
-                                            {% if unit.state.label == 'OK' %}
-                                                <span class="text-success">● {{ unit.state.label }}</span>
-                                            {% elseif unit.state.label == 'Incident' %}
-                                                <span class="text-danger fw-bold">● {{ unit.state.label }}</span>
-                                            {% else %}
-                                                <span class="text-warning">● {{ unit.state.label }}</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {% if unit.state.label == 'Incident' %}
-                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#incidentModal{{ unit.id }}">
-                                                    <i class="bi bi-exclamation-triangle"></i> Détails Incident
-                                                </button>
-                                            {% else %}
-                                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#configModal{{ unit.id }}">
-                                                    <i class="bi bi-gear"></i> Configurer
-                                                </button>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% else %}
-                                    <tr>
-                                        <td colspan="4" class="text-center text-muted py-3">
-                                            Vous n'avez pas encore d'unités attribuées.
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                {# GÉNÈRE LES MODALES #}
-                {% for unit in units %}{# --- MODALE INCIDENT (Uniquement si l'unité est en panne) --- #}
-                    {% if unit.state.label == 'Incident' %}
-                        <div class="modal fade" id="incidentModal{{ unit.id }}" tabindex="-1" aria-labelledby="incidentModalLabel{{ unit.id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content border-danger">
-                                    <div class="modal-header bg-danger text-white">
-                                        <h5 class="modal-title" id="incidentModalLabel{{ unit.id }}">
-                                            <i class="bi bi-exclamation-triangle-fill"></i> Incident : {{ unit.bay.label }} - {{ unit.label }}
-                                        </h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    
-                                    <div class="modal-body">
-                                        <p class="text-danger fw-bold mb-4">Un dysfonctionnement a été détecté sur cet équipement.</p>
-                                        
-                                        <h6 class="text-uppercase small text-muted fw-bold">Suivi des interventions :</h6>
-                                        
-                                        {% set unitHasIntervention = false %}
-                                        <div class="list-group mt-2">
-                                            {# On liste toutes les interventions pour CETTE unité spécifique #}
-                                            {% for intervention in unit.interventions %}
-                                                {% set unitHasIntervention = true %}
-                                                <div class="list-group-item list-group-item-danger flex-column align-items-start">
-                                                    <div class="d-flex w-100 justify-content-between mb-1">
-                                                        <strong class="mb-1">Intervention technique</strong>
-                                                        <small>{{ intervention.startDate|date('d/m/Y H:i') }}</small>
-                                                    </div>
-                                                    <p class="mb-1 small">{{ intervention.description|default('En cours de diagnostic par nos techniciens.') }}</p>
-                                                    <small class="text-muted">Technicien : {{ intervention.technician.label|default('Non assigné') }}</small>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                        
-                                        {# Si le technicien n'a pas encore créé l'intervention dans le système #}
-                                        {% if not unitHasIntervention %}
-                                            <div class="alert alert-warning mt-3 small">
-                                                <i class="bi bi-hourglass-split"></i> L'incident vient d'être remonté. Un technicien va être assigné très prochainement pour un diagnostic.
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="modal-footer bg-light">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                                        <a href="mailto:support@worktogether.fr?subject=Urgence : Incident sur Unité {{ unit.label }}" class="btn btn-danger">
-                                            <i class="bi bi-envelope"></i> Contacter le support
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {# --- FIN MODALE INCIDENT --- #}
-
-                    {% else %}
-                        <div class="modal fade" id="configModal{{ unit.id }}" tabindex="-1" aria-labelledby="configModalLabel{{ unit.id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-dark text-white">
-                                        <h5 class="modal-title" id="configModalLabel{{ unit.id }}">Configuration : {{ unit.bay.label }} - {{ unit.label }}</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    
-                                    <form action="{{ path('app_unit_configure', {'id': unit.id}) }}" method="POST">
-                                        <div class="modal-body">
-                                            <p class="small text-muted mb-4">Personnalisez les informations de votre serveur pour mieux le retrouver dans votre infrastructure.</p>
-                                            
-                                            <div class="mb-3">
-                                                <label for="label{{ unit.id }}" class="form-label fw-bold">Nom de l'unité (Label)</label>
-                                                <input type="text" class="form-control" id="label{{ unit.id }}" name="label" value="{{ unit.label }}" required placeholder="Ex: Serveur Web Principal">
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="description{{ unit.id }}" class="form-label fw-bold">Description / Rôle</label>
-                                                <textarea class="form-control" id="description{{ unit.id }}" name="description" rows="3" required placeholder="Ex: Héberge le site vitrine et le blog.">{% if unit.description is defined %}{{ unit.description }}{% endif %}</textarea>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer bg-light">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                            <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Sauvegarder</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-                {# FIN DES MODALES #}
-
-                {# Historique des interventions liées aux unités du client #}
-                <div>
-                    <h6>Historique récent des interventions</h6>
-                    {% set hasInterventions = false %}
-                    
-                    {# On boucle sur les unités, puis sur leurs interventions #}
-                    {% for unit in units %}
-                        {% for intervention in unit.interventions %}
-                            {% set hasInterventions = true %}
-                            <div class="alert alert-info py-2 small mb-2">
-                                <strong>{{ intervention.startDate|date('d/m/Y H:i') }} :</strong> 
-                                {{ intervention.description|default('Intervention technique en cours') }} sur {{ unit.bay.label }}-{{ unit.label }}.
-                                (Technicien: {{ intervention.technician.label|default('Non assigné') }})
-                            </div>
-                        {% endfor %}
-                    {% endfor %}
-
-                    {% if not hasInterventions %}
-                        <p class="text-muted small">Aucune intervention enregistrée sur vos équipements.</p>
-                    {% endif %}
-                </div>
+                {# Inclusion du tableau des unités #}
+                {{ include('customer_area/_partials/_units_table.html.twig') }}
             </div>
         </div>
+        
+        {# Inclusion de l'historique des interventions #}
+        {{ include('customer_area/_partials/_history.html.twig') }}
     </div>
+
+    {# Inclusion des fenêtres modales #}
+    {{ include('customer_area/_partials/_modals.html.twig') }}
+
 {% endblock %}

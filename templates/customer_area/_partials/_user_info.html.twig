@@ -1,0 +1,11 @@
+{# Gestion des données personnelles #}
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Mes Informations</h5>
+    </div>
+    <div class="card-body">
+        {# On utilise les vraies données de app.user #}
+        <p><strong>Nom :</strong> {{ app.user.firstName|capitalize }} {{ app.user.lastName|upper }}</p>
+        <p><strong>Email :</strong> {{ app.user.email }}</p>
+    </div>
+</div>

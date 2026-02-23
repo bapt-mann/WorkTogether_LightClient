@@ -1,0 +1,25 @@
+{# Gestion des commandes (Locations / Rentals) #}
+<div class="card shadow-sm">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Mes Commandes</h5>
+    </div>
+    <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+            {# Boucle sur les locations du client #}
+            {% for rental in rentals %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {# On remonte au label de l'offre et au nombre d'unités #}
+                    Pack {{ rental.offer.label }} ({{ rental.offer.unitsNumber }}U)
+                    <span class="badge bg-success rounded-pill">Actif</span>
+                </li>
+            {% else %}
+                <li class="list-group-item text-muted text-center small">
+                    Aucune location en cours.
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="p-3">
+            <a href="{{ path('app_home') }}#offres" class="btn btn-warning btn-sm w-100">Nouvelle commande</a>
+        </div>
+    </div>
+</div>

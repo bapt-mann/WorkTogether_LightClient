@@ -1,0 +1,21 @@
+{# Historique des interventions liées aux unités du client #}
+<div>
+    <h6>Historique récent des interventions</h6>
+    {% set hasInterventions = false %}
+    
+    {# On boucle sur les unités, puis sur leurs interventions #}
+    {% for unit in units %}
+        {% for intervention in unit.interventions %}
+            {% set hasInterventions = true %}
+            <div class="alert alert-info py-2 small mb-2">
+                <strong>{{ intervention.startDate|date('d/m/Y H:i') }} :</strong> 
+                {{ intervention.description|default('Intervention technique en cours') }} sur {{ unit.bay.label }}-{{ unit.label }}.
+                (Technicien: {{ intervention.technician.label|default('Non assigné') }})
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {% if not hasInterventions %}
+        <p class="text-muted small">Aucune intervention enregistrée sur vos équipements.</p>
+    {% endif %}
+</div>
