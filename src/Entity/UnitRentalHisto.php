@@ -22,11 +22,11 @@ class UnitRentalHisto
 
     #[ORM\ManyToOne(inversedBy: 'unitRentalHistos')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?unit $unit = null;
+    private ?Unit $unit = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?rental $rental = null;
+    private ?Rental $rental = null;
 
     public function getId(): ?int
     {

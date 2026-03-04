@@ -37,6 +37,9 @@ class Offer
     #[ORM\OneToMany(targetEntity: Rental::class, mappedBy: 'offer')]
     private Collection $rentals;
 
+    #[ORM\Column]
+    private ?bool $isActive = null;
+
     public function __construct()
     {
         $this->rentals = new ArrayCollection();
@@ -133,6 +136,18 @@ class Offer
                 $rental->setOffer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }
