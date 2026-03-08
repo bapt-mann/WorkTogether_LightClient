@@ -9,6 +9,11 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Formulaire de connexion pour les utilisateurs
+ * Permet aux utilisateurs de saisir leur adresse email et mot de passe pour se connecter à leur compte
+ * Utilisé dans la page de connexion gérée par SecurityController
+ */
 class LoginFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
