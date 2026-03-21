@@ -16,6 +16,12 @@ use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\Form\FormError;
 
+/**
+ * Controller de la page d'inscription
+ * Permet aux utilisateurs de créer un compte en remplissant un formulaire d'inscription
+ * Valide les données du formulaire, crée un nouvel utilisateur, et envoie un email de confirmation avec un lien de validation
+ * Le lien de validation est crypté et expire après un certain temps pour des raisons de sécurité
+ */
 final class RegisterController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
@@ -37,7 +43,7 @@ final class RegisterController extends AbstractController
             $plainPassword = $form->get('plainPassword')->getData();
 
             
-            // VÉRIFICATION DE LA COMPLEXITÉ DU MOT DE PASSE
+            // Vérificaton de la complexité du mot de passe :
             // Minimum : 10 caractères, 2 majuscules, 2 minuscules, 2 chiffres, 1 caractère spécial
             $regex = '/^(?=(.*[a-z]){2})(?=(.*[A-Z]){2})(?=(.*\d){2})(?=.*[^a-zA-Z0-9]).{10,}$/';
             
@@ -71,7 +77,7 @@ final class RegisterController extends AbstractController
                 return $this->redirectToRoute('app_check_email');
             }
 
-            // CREATION DU PROFIL (PARTICULIER OU ENTREPRISE)
+            // Création de l'entreprise associée à l'utilisateur
             $companyName = $form->get('companyName')->getData();
             $siret = $form->get('siret')->getData();
 
@@ -86,7 +92,7 @@ final class RegisterController extends AbstractController
             $company = new \App\Entity\Company();
             $company->setCompanyName($companyName);
             $company->setSiret($siret);
-            $company->setLabel($companyName); // utilise le nom de l'entreprise comme label
+            $company->setLabel($companyName);
 
             $user->setCompany($company);
             

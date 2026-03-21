@@ -12,6 +12,12 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Formulaire d'inscription pour les nouveaux utilisateurs
+ * Permet aux nouveaux utilisateurs de saisir les informations nécessaires à la création de leur compte, 
+ * y compris les informations de l'entreprise (nom et SIRET) et les informations personnelles (email, prénom, nom, mot de passe)
+ * Utilisé dans la page d'inscription gérée par SecurityController
+ */
 class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

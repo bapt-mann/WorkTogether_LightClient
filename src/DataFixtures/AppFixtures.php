@@ -26,7 +26,7 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // 1. CRÉATION DES ÉTATS
+        // CRÉATION DES ÉTATS
         $states = ['OK', 'Incident', 'Maintenance'];
         $stateEntities = [];
         foreach ($states as $label) {
@@ -36,7 +36,7 @@ class AppFixtures extends Fixture
             $stateEntities[$label] = $state;
         }
 
-        // 2. CRÉATION DES OFFRES
+        // CRÉATION DES OFFRES
         $offersData = [
             ['label' => 'Base', 'units' => 1, 'price' => '100.00', 'reduction' => 0, 'isActive' => true],
             ['label' => 'Start-up', 'units' => 10, 'price' => '900.00', 'reduction' => 10, 'isActive' => true],
@@ -56,11 +56,11 @@ class AppFixtures extends Fixture
             $manager->persist($offer);
             
             if ($data['label'] === 'PME') {
-                $offerPME = $offer; // On met l'offre PME de côté pour Jean
+                $offerPME = $offer;
             }
         }
 
-        // 3. CRÉATION DU PROFIL CLIENT "JEAN"
+        // CRÉATION DU PROFIL CLIENT "JEAN"
         $customerJean = new Company();
         $customerJean->setCompanyName('Jean Dupont');
         $customerJean->setSiret('98765432109876');
@@ -72,19 +72,19 @@ class AppFixtures extends Fixture
         $manager->persist($company);
 
 
-        // 4. CRÉATION D'UNE LOCATION 
+        // CRÉATION D'UNE LOCATION 
         $rentalJean = new Rental();
         $rentalJean->setCompany($customerJean);
         $rentalJean->setOffer($offerPME);
         $rentalJean->setPurchaseDate(new \DateTime('-15 days')); // Achetée il y a 15 jours
         $manager->persist($rentalJean);
 
-        // 5. CRÉATION D'UN TECHNICIEN
+        // CRÉATION D'UN TECHNICIEN
         $technician = new Technician();
         $technician->setLabel('Alice Expert-Réseau');
         $manager->persist($technician);
 
-        // 6. CRÉATION DES BAIES ET UNITÉS
+        // CRÉATION DES BAIES ET UNITÉS
         $incidentUnit = null;
 
         for ($i = 1; $i <= 30; $i++) {
@@ -101,11 +101,11 @@ class AppFixtures extends Fixture
                 $unit->setBay($bay);
                 $unit->setDescription('oui');
 
-                // SCÉNARIO : On attribue les 21 premières unités de la baie B014 à Jean
+                // Attribue les 21 premières unités de la baie B014 à Jean
                 if ($i === 14 && $j <= 21) {
                     $unit->setRental($rentalJean);
 
-                    // On simule une panne sur l'unité U02
+                    // Simule une panne sur l'unité U02
                     if ($j === 2) {
                         $unit->setState($stateEntities['Incident']);
                         $incidentUnit = $unit;
@@ -119,7 +119,7 @@ class AppFixtures extends Fixture
             }
         }
 
-        // 7. CRÉATION DE L'INTERVENTION SUR L'UNITÉ EN PANNE
+        // CRÉATION DE L'INTERVENTION SUR L'UNITÉ EN PANNE
         if ($incidentUnit) {
             $intervention = new Intervention();
             $intervention->setUnit($incidentUnit);
@@ -131,7 +131,7 @@ class AppFixtures extends Fixture
             $manager->persist($intervention);
         }
 
-        // 8. CRÉATION DU COMPTE UTILISATEUR DE JEAN (Pour la connexion)
+        // CRÉATION DU COMPTE UTILISATEUR DE JEAN (Pour la connexion)
         $client = new User();
         $client->setEmail('client@entreprise.fr');
         $client->setRoles(['ROLE_USER']);

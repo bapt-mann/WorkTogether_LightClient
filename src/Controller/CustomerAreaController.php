@@ -7,6 +7,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+/**
+ * Controller permettant de gérer l'espace client de l'utilisateur connecté
+ * Récuprère les informations du profil du compte, les locations en cours, les unités associées, 
+ */
 final class CustomerAreaController extends AbstractController
 {
     #[Route('/customerarea', name: 'app_customer_area')]
@@ -17,12 +21,10 @@ final class CustomerAreaController extends AbstractController
         $user = $this->getUser();
         
         $rentals = [];
-        $profileType = 'Inconnu';
 
         $rentals = $user->getCompany()->getRentals();
-        $profileType = 'Entreprise';
         
-        // On récupère les unités de toutes les locations
+        // Récupère les unités de toutes les locations
         $units = [];
         foreach ($rentals as $rental) {
             foreach ($rental->getUnits() as $unit) {
@@ -36,26 +38,25 @@ final class CustomerAreaController extends AbstractController
 
         return $this->render('customer_area/index.html.twig', [
             'rentals' => $rentals,
-            'units' => $units,
-            'profileType' => $profileType, // Pratique pour l'afficher dans le Twig !
+            'units' => $units
         ]);
     }
 
-    #[Route('/customerarea/updateprofile', name: 'app_customer_area_update_profile')]
+    #[Route('/customerarea/updateprofile', name: 'update_profile')]
     #[IsGranted("ROLE_USER")]
     public function updateProfile(): Response
     {
 
     }
 
-    #[Route('/customerarea/changepassword', name: 'app_customer_area_change_password')]
+    #[Route('/customerarea/changepassword', name: 'change_password')]
     #[IsGranted("ROLE_USER")]
     public function changePassword(): Response
     {
 
     }
 
-    #[Route('/customerarea/seeInterventions', name: 'app_customer_area_see_interventions')]
+    #[Route('/customerarea/seeInterventions', name: 'see_interventions')]
     #[IsGranted("ROLE_USER")]
     public function seeInterventions(): Response
     {

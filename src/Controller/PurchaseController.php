@@ -13,6 +13,12 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Controller de la page de confirmation d'achat des offres
+ * Affiche les détails de l'offre sélectionnée et propose un bouton de confirmation d'achat
+ * Si l'utilisateur confirme, vérifie la disponibilité des unités dans le datacenter
+ * Crée une nouvelle location (Rental) associée à l'entreprise de l'utilisateur, et attribue les unités correspondantes à cette location. 
+ */
 final class PurchaseController extends AbstractController
 {
     #[Route('/purchase/{id}', name: 'app_purchase')]
