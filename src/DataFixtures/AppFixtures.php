@@ -38,10 +38,10 @@ class AppFixtures extends Fixture
 
         // 2. CRÉATION DES OFFRES
         $offersData = [
-            ['label' => 'Base', 'units' => 1, 'price' => '100.00', 'reduction' => 0],
-            ['label' => 'Start-up', 'units' => 10, 'price' => '900.00', 'reduction' => 10],
-            ['label' => 'PME', 'units' => 21, 'price' => '1680.00', 'reduction' => 20],
-            ['label' => 'Entreprise', 'units' => 42, 'price' => '2940.00', 'reduction' => 30],
+            ['label' => 'Base', 'units' => 1, 'price' => '100.00', 'reduction' => 0, 'isActive' => true],
+            ['label' => 'Start-up', 'units' => 10, 'price' => '900.00', 'reduction' => 10, 'isActive' => true],
+            ['label' => 'PME', 'units' => 21, 'price' => '1680.00', 'reduction' => 20, 'isActive' => true],
+            ['label' => 'Entreprise', 'units' => 42, 'price' => '2940.00', 'reduction' => 30, 'isActive' => true],
         ];
 
         $offerPME = null;
@@ -52,6 +52,7 @@ class AppFixtures extends Fixture
             $offer->setPrice($data['price']);
             $offer->setReduction($data['reduction']);
             $offer->setDurationInDays(30);
+            $offer->setIsActive($data['isActive']);
             $manager->persist($offer);
             
             if ($data['label'] === 'PME') {

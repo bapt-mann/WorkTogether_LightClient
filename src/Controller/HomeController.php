@@ -12,8 +12,8 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(OfferRepository $offerRepository): Response
     {
-        // On récupère toutes les offres triées par prix croissant (optionnel mais recommandé)
-        $offers = $offerRepository->findAll();
+        // récupère toutes les offres triées par prix croissant
+        $offers = $offerRepository->findBy(['isActive' => true], ['price' => 'ASC']);
 
         return $this->render('home/index.html.twig', [
             'offers' => $offers,
