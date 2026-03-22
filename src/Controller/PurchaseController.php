@@ -63,6 +63,9 @@ final class PurchaseController extends AbstractController
         $rental->setCompany($company);
         $rental->setOffer($offer);
         $rental->setPurchaseDate(new \DateTime());
+        $rental->setIsAutoRenew(true); 
+        $rental->setEndDate((new \DateTime())->modify('+1 month')); 
+        
 
         $em->persist($rental);
 
