@@ -91,6 +91,16 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/validator" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfonycasts/verify-email-bundle" />
       <excludeFolder url="file://$MODULE_DIR$/var" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/jawira/db-draw" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/jawira/doctrine-diagram-bundle" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/jawira/doctrine-diagram-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/jawira/entity-draw" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/jawira/plantuml-client" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/jawira/plantuml-encoding" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/jawira/plantuml-to-image" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/jawira/the-lost-functions" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/messenger" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/scheduler" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

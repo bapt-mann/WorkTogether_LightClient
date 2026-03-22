@@ -32,6 +32,12 @@ class Rental
     #[ORM\OneToMany(targetEntity: Unit::class, mappedBy: 'rental')]
     private Collection $units;
 
+    #[ORM\Column]
+    private ?bool $isAutoRenew = null;
+
+    #[ORM\Column]
+    private ?\DateTime $endDate = null;
+
     public function __construct()
     {
         $this->units = new ArrayCollection();
@@ -104,6 +110,30 @@ class Rental
                 $unit->setRental(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isAutoRenew(): ?bool
+    {
+        return $this->isAutoRenew;
+    }
+
+    public function setIsAutoRenew(bool $isAutoRenew): static
+    {
+        $this->isAutoRenew = $isAutoRenew;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?\DateTime
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(\DateTime $endDate): static
+    {
+        $this->endDate = $endDate;
 
         return $this;
     }
