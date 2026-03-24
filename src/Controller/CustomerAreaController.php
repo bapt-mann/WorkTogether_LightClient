@@ -8,6 +8,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\Rental;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Form\UpdateProfileType;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\FormError;
+
 
 /**
  * Controller permettant de gérer l'espace client de l'utilisateur connecté
@@ -47,9 +51,66 @@ final class CustomerAreaController extends AbstractController
 
     #[Route('/customerarea/updateprofile', name: 'update_profile')]
     #[IsGranted("ROLE_USER")]
-    public function updateProfile(): Response
+    public function updateProfile(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): Response
     {
+        $user = $this->getUser();
+        $company = $user->getCompany();
+        
+        $form = $this->createForm(UpdateProfileType::class, $user, [
+            'companyName' => $company ? $company->getCompanyName() : '',
+            'siret' => $company ? $company->getSiret() : '',
+        ]);
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $companyName = $form->get('companyName')->getData();
+            if ($companyName === null) {
+                $form->get('companyName')->addError(new FormError(
+                    'Le nom de l\'entreprise est obligatoire.'
+                ));
+                return $this->render('register/index.html.twig', [
+                    'registrationForm' => $form->createView(),
+                ]);
+            }
+
+            $siret = $form->get('siret')->getData();
+            if ($siret === null || !preg_match('/^\d{14}$/', $siret)) {
+                $form->get('siret')->addError(new FormError(
+                    'Le SIRET de l\'entreprise est obligatoire et doit contenir 14 chiffres.'
+                ));
+                return $this->render('register/index.html.twig', [
+                    'registrationForm' => $form->createView(),
+                ]);
+            }
+
+            if ($company) {
+                $company->setCompanyName($companyName);
+                $company->setSiret($siret);
+            }
+            else {
+                $this->addFlash('error', 'Erreur critique : Aucun profil entreprise trouvé pour votre compte.');
+                dump('Erreur critique : Aucun profil entreprise trouvé pour votre compte.');
+                return $this->redirectToRoute('app_customer_area');
+            }
+
+            $user->setEmail($form->get('email')->getData());
+            $user->setFirstName($form->get('firstName')->getData());
+            $user->setLastName($form->get('lastName')->getData());
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Votre profil a été mis à jour avec succès.');
+            dump('Votre profil a été mis à jour avec succès.');
+            return $this->redirectToRoute('app_customer_area');
+        }
+
+        return $this->render('customer_area/update_profile.html.twig', [
+            'updateProfileForm' => $form->createView(),
+        ]);
     }
 
     #[Route('/customerarea/changepassword', name: 'change_password')]

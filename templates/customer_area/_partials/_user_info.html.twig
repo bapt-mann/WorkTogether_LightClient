@@ -10,7 +10,7 @@
         <p><strong>Entreprise :</strong> {{ app.user.company.companyName }}</p>
         <p><strong>SIRET :</strong> {{ app.user.company.siret }}</p>
 
-        <a href="{{ path('app_home') }}">
+        <a href="{{ path('update_profile') }}">
             <button class="btn btn-outline-primary btn-sm mt-3" data-bs-toggle="modal" data-bs-target="#editInfoModal" >
                 <i class="bi bi-pencil-square"></i> Modifier mes informations 
             </button>

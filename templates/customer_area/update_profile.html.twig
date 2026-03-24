@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Espace Client - WorkTogether{% endblock %}
+
+{% block body %}
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Modifier mon profil</h1>
+
+        {{ form_start(updateProfileForm) }}
+            <div class="mb-3">
+                {{ form_label(updateProfileForm.firstName) }}
+                {{ form_widget(updateProfileForm.firstName, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(updateProfileForm.firstName) }}
+            </div>
+            <div class="mb-3">
+                {{ form_label(updateProfileForm.lastName) }}
+                {{ form_widget(updateProfileForm.lastName, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(updateProfileForm.lastName) }}
+            </div>
+            <div class="mb-3">
+                {{ form_label(updateProfileForm.email) }}
+                {{ form_widget(updateProfileForm.email, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(updateProfileForm.email) }}
+            </div>
+            <div class="mb-3">
+                {{ form_label(updateProfileForm.companyName) }}
+                {{ form_widget(updateProfileForm.companyName, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(updateProfileForm.companyName) }}
+            </div>
+            <div class="mb-3">
+                {{ form_label(updateProfileForm.siret) }}
+                {{ form_widget(updateProfileForm.siret, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(updateProfileForm.siret) }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+        {{ form_end(updateProfileForm) }}
+
+    </div>
+
+{% endblock %}
