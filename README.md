@@ -26,3 +26,4 @@ Commandes utilisées pour construire le squelette de l'application :
 * `php bin/console make:entity` : Crée ou modifie une entité (ex: Unit, Company) et ses getters/setters.
 * `php bin/console make:controller` : Crée un nouveau contrôleur et sa vue Twig associée (ex: PurchaseController).
 * `php bin/console make:registration-form` : Génère le système complet d'inscription.
+* `php bin/console make:form` : Génère un Formulaire symfony
