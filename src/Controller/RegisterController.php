@@ -39,19 +39,21 @@ final class RegisterController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = $form->get('plainPassword')->getData();
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            dump('Checking form submission');
+
+            $plainPassword = $form->get('plainPassword')->getData();
             
             // Vérificaton de la complexité du mot de passe :
             // Minimum : 10 caractères, 2 majuscules, 2 minuscules, 2 chiffres, 1 caractère spécial
-            $regex = '/^(?=(.*[a-z]){2})(?=(.*[A-Z]){2})(?=(.*\d){2})(?=.*[^a-zA-Z0-9]).{10,}$/';
+            $regex = '/^(?=(.*[a-z]){2})(?=(.*[A-Z]){2})(?=(.*\d){2})(?=.*[^a-zA-Z0-9]).{8,}$/';
             
             if (!preg_match($regex, $plainPassword)) { // perform regualr expression match
-                $form->get('plainPassword')->addError(new FormError(
-                    'Le mot de passe doit contenir au moins 10 caractères, dont 2 minuscules, 2 majuscules, 2 chiffres et 1 caractère spécial.'
+                $form->get('plainPassword')->get('first')->addError(new FormError(
+                    'Le mot de passe doit contenir au moins 8 caractères, dont 2 minuscules, 2 majuscules, 2 chiffres et 1 caractère spécial.'
                 ));
-                
+                dump('Wrong password format');
                 return $this->render('register/index.html.twig', [
                     'registrationForm' => $form->createView(),
                 ]);
@@ -77,13 +79,21 @@ final class RegisterController extends AbstractController
                 return $this->redirectToRoute('app_check_email');
             }
 
-            // Création de l'entreprise associée à l'utilisateur
             $companyName = $form->get('companyName')->getData();
-            $siret = $form->get('siret')->getData();
+            if ($companyName === null) {
+                $form->get('companyName')->addError(new FormError(
+                    'Le nom de l\'entreprise est obligatoire.'
+                ));
+                return $this->render('register/index.html.twig', [
+                    'registrationForm' => $form->createView(),
+                ]);
+            }
 
-            // Sécurité
-            if (empty($companyName) || empty($siret)) {
-                $this->addFlash('error', 'Veuillez renseigner le nom de l\'entreprise et le SIRET.');
+            $siret = $form->get('siret')->getData();
+            if ($siret === null || !preg_match('/^\d{14}$/', $siret)) {
+                $form->get('siret')->addError(new FormError(
+                    'Le SIRET de l\'entreprise est obligatoire et doit contenir 14 chiffres.'
+                ));
                 return $this->render('register/index.html.twig', [
                     'registrationForm' => $form->createView(),
                 ]);
@@ -95,8 +105,6 @@ final class RegisterController extends AbstractController
             $company->setLabel($companyName);
 
             $user->setCompany($company);
-            
-
 
             $user->setRoles(["ROLE_USER"]);
             $user->setIsVerified(false);
