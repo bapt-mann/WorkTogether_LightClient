@@ -21,9 +21,7 @@ final class CustomerAreaController extends AbstractController
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
-
         $rentals = [];
-
         $rentals = $user->getCompany()->getRentals();
 
         // Récupère les unités de toutes les locations
@@ -33,6 +31,9 @@ final class CustomerAreaController extends AbstractController
                 $units[] = $unit;
             }
         }
+
+        dump($rentals);
+        dump($units);
 
         if (empty($rentals) && empty($units)) {
             $this->addFlash('info', 'Vous n\'avez aucune location ou unité en cours.');
@@ -72,19 +73,19 @@ final class CustomerAreaController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        // 1. SÉCURITÉ : On vérifie que la location appartient bien à l'entreprise de l'utilisateur
+        // Vérifie que la location appartient bien à l'entreprise de l'utilisateur
         if ($rental->getCompany() !== $user->getCompany()) {
             $this->addFlash('error', 'Action non autorisée. Cette location ne vous appartient pas.');
             return $this->redirectToRoute('app_customer_area');
         }
 
-        // 2. LOGIQUE : On inverse le booléen (si True -> False, si False -> True)
+        // Inverse le booléen 
         $rental->setIsAutoRenew(!$rental->isAutoRenew());
 
-        // 3. PERSISTANCE : On sauvegarde en base de données
+        // Sauvegarde en base de données
         $em->flush();
 
-        // 4. RETOUR VISUEL : On informe l'utilisateur
+        // Informe l'utilisateur
         $statusMessage = $rental->isAutoRenew() ? 'réactivée' : 'annulée';
         $this->addFlash('success', "La tacite reconduction a bien été $statusMessage pour l'offre " . $rental->getOffer()->getLabel() . ".");
 

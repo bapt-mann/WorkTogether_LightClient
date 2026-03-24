@@ -33,16 +33,14 @@
                 </div>
 
                 {# Les champs Entreprise #}
-                <div id="company-fields" style="display: none;" class="p-3 bg-light rounded border mb-4">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label small fw-bold text-uppercase">Nom de l'entreprise</label>
-                            {{ form_widget(registrationForm.companyName, {'attr': {'class': 'form-control', 'placeholder': 'Ma Super Boîte'}}) }}
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label small fw-bold text-uppercase">Numéro SIRET</label>
-                            {{ form_widget(registrationForm.siret, {'attr': {'class': 'form-control', 'placeholder': '123 456 789 00012'}}) }}
-                        </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold text-uppercase">Nom de l'entreprise</label>
+                        {{ form_widget(registrationForm.companyName, {'attr': {'class': 'form-control', 'placeholder': 'Ma Super Boîte'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold text-uppercase">Numéro SIRET</label>
+                        {{ form_widget(registrationForm.siret, {'attr': {'class': 'form-control', 'placeholder': '123 456 789 00012'}}) }}
                     </div>
                 </div>
 
@@ -63,7 +61,7 @@
                 </div>
 
                 <div class="form-text small text-muted mb-4">
-                    <i class="bi bi-info-circle"></i> Le mot de passe doit contenir au moins 6 caractères.
+                    <i class="bi bi-info-circle"></i> Le mot de passe doit contenir au moins 8 caractères.
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm fw-bold">
