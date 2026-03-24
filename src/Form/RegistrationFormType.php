@@ -25,11 +25,9 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('companyName', TextType::class, [
                 'mapped' => false,
-                'required' => false, // Géré par Javascript
             ])
             ->add('siret', TextType::class, [
                 'mapped' => false,
-                'required' => false,
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email',
