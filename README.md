@@ -7,7 +7,6 @@ Ce projet utilise le framework Symfony. Voici les commandes principales pour man
 ### 1. Démarrage du projet
 Pour installer les dépendances et lancer le serveur local :
 * `composer install` : Installe toutes les librairies PHP requises.
-* `npm install` & `npm run dev` : Compile les assets front-end (si Webpack/Vite est configuré).
 * `symfony server:start -d` : Lance le serveur web local en arrière-plan.
 
 ### 2. Gestion de la Base de Données (Doctrine)
