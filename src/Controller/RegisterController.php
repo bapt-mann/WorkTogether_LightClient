@@ -174,7 +174,7 @@ final class RegisterController extends AbstractController
         $entityManager->flush();
 
         $this->addFlash('success', 'Votre email a été vérifié ! Vous pouvez vous connecter.');
-        return $this->redirectToRoute('app_security'); // Ou app_home
+        return $this->redirectToRoute('app_home');
     }
 
     #[Route('/register/check-email', name: 'app_check_email')]
