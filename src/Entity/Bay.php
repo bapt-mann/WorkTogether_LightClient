@@ -28,12 +28,6 @@ class Bay
     #[ORM\OneToMany(targetEntity: Unit::class, mappedBy: 'bay', orphanRemoval: true)]
     private Collection $units;
 
-    /**
-     * @var Collection<int, Intervention>
-     */
-    #[ORM\OneToMany(targetEntity: Intervention::class, mappedBy: 'bay')]
-    private Collection $interventions;
-
     public function __construct()
     {
         $this->units = new ArrayCollection();
