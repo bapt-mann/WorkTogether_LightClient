@@ -94,8 +94,10 @@ final class RegisterController extends AbstractController
             }
 
             dump('Checking Siret');
-            $siret = trim($form->get('siret')->getData());
+            $rawSiret = trim($form->get('siret')->getData());
+            $siret = str_replace(' ', '', (string) $rawSiret);
             if ($siret === null || !preg_match('/^\d{14}$/', $siret)) {
+                dump($siret);
                 $form->get('siret')->addError(new FormError(
                     'Le SIRET de l\'entreprise est obligatoire et doit contenir 14 chiffres.'
                 ));
@@ -103,6 +105,7 @@ final class RegisterController extends AbstractController
                     'registrationForm' => $form->createView(),
                 ]);
             }
+
 
             dump('Create Company');
             $company = new \App\Entity\Company();
