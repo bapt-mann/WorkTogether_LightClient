@@ -44,12 +44,13 @@ final class RegisterController extends AbstractController
             dump('Checking form submission');
 
             $plainPassword = $form->get('plainPassword')->getData();
-            
+
             // Vérificaton de la complexité du mot de passe :
             // Minimum : 10 caractères, 2 majuscules, 2 minuscules, 2 chiffres, 1 caractère spécial
             $regex = '/^(?=(.*[a-z]){2})(?=(.*[A-Z]){2})(?=(.*\d){2})(?=.*[^a-zA-Z0-9]).{8,}$/';
-            
-            if (!preg_match($regex, $plainPassword)) { // perform regualr expression match
+
+            dump('Checking password');
+            if (!preg_match($regex, $plainPassword)) { // perform regular expression match
                 $form->get('plainPassword')->get('first')->addError(new FormError(
                     'Le mot de passe doit contenir au moins 8 caractères, dont 2 minuscules, 2 majuscules, 2 chiffres et 1 caractère spécial.'
                 ));
@@ -68,17 +69,20 @@ final class RegisterController extends AbstractController
 
             $existingUser = $userRepository->findOneBy(['email' => $form->get('email')->getData()]);
 
+            dump('Checking User');
             if ($existingUser && $existingUser->isVerified() === true) {
                 $this->addFlash('error', 'Cet email est déjà utilisé.');
                 return $this->render('register/index.html.twig', [
                     'registrationForm' => $form->createView(),
                 ]);
             }
+            dump('Checking mail');
             if ($existingUser && $existingUser->isVerified() === false) {
                 $this->addFlash('error', 'Cet email est déjà utilisé mais pas vérifié');
                 return $this->redirectToRoute('app_check_email');
             }
 
+            dump('Checking company name');
             $companyName = $form->get('companyName')->getData();
             if ($companyName === null) {
                 $form->get('companyName')->addError(new FormError(
@@ -89,6 +93,7 @@ final class RegisterController extends AbstractController
                 ]);
             }
 
+            dump('Checking Siret');
             $siret = $form->get('siret')->getData();
             if ($siret === null || !preg_match('/^\d{14}$/', $siret)) {
                 $form->get('siret')->addError(new FormError(
@@ -99,19 +104,20 @@ final class RegisterController extends AbstractController
                 ]);
             }
 
+            dump('Create Company');
             $company = new \App\Entity\Company();
             $company->setCompanyName($companyName);
             $company->setSiret($siret);
-            $company->setLabel($companyName);
-
+            $company->setCompanyName($companyName);
+            dump('Setup User');
             $user->setCompany($company);
-
             $user->setRoles(["ROLE_USER"]);
             $user->setIsVerified(false);
 
             $entityManager->persist($user);
             $entityManager->flush();
 
+            dump('verify email');
             $signatureComponents = $verifyEmailHelper->generateSignature(
                 'app_verify_email',
                 $user->getId(),
