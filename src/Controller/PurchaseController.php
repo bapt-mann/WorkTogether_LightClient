@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Offer;
 use App\Entity\Rental;
 use App\Entity\Unit;
+use App\Entity\UnitRentalHisto;
 use App\Repository\UnitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Controller de la page de confirmation d'achat des offres
@@ -66,7 +68,6 @@ final class PurchaseController extends AbstractController
         $rental->setIsAutoRenew(true); 
         $rental->setEndDate((new \DateTime())->modify('+1 month')); 
         
-
         $em->persist($rental);
 
         // Attribution des unités et mise en place de la description par défaut
@@ -74,6 +75,12 @@ final class PurchaseController extends AbstractController
             $unit->setRental($rental);
             $unit->setDescription('Unité en attente de configuration');
             $unit->setLabel($unit->getLabel() . ' (À configurer)');
+
+            $histo = new UnitRentalHisto();
+            $histo->setUnit($unit);
+            $histo->setRental($rental);
+            $histo->setStartDate(new \DateTime());
+            $em->persist($histo);
         }
 
         // On sauvegarde le tout en base de données

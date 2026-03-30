@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Repository\RentalRepository;
+use App\Repository\UnitRentalHistoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -18,20 +19,22 @@ class CheckRentalsCommand extends Command
 {
     public function __construct(
         private RentalRepository $rentalRepository,
+        private UnitRentalHistoRepository $unitRentalHistoRepository,
         private EntityManagerInterface $em
     ) {
         parent::__construct();
     }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $now = new \DateTime();
 
-        // 1. On cherche toutes les locations dont la date de fin est dépassée (<= maintenant)
+        // 1. NOUVELLE REQUÊTE : On cherche les locations ACTIVES dont la date est dépassée
         $expiredRentals = $this->rentalRepository->createQueryBuilder('r')
             ->where('r.endDate <= :now')
+            ->andWhere('r.isActive = :active') // <-- On filtre sur les locations actives
             ->setParameter('now', $now)
+            ->setParameter('active', true)
             ->getQuery()
             ->getResult();
 
@@ -45,21 +48,34 @@ class CheckRentalsCommand extends Command
 
         foreach ($expiredRentals as $rental) {
             if ($rental->isAutoRenew()) {
-                // CAS 1 : Le client a laissé le renouvellement automatique
-                // On repousse la date de fin de 30 jours
-                $newEndDate = (clone $rental->getEndDate())->modify('+30 days');
+                // Le client a laissé le renouvellement automatique
+                $duration = $rental->getOffer()->getDurationInDay();
+                $newEndDate = (clone $rental->getEndDate())->modify('+' . $duration . ' days');
                 $rental->setEndDate($newEndDate);
                 $renewed++;
             } else {
-                // CAS 2 : Le client a annulé son abonnement
-                // On libère les serveurs (Unités) pour qu'ils retournent dans le Datacenter
+                // Le client a annulé son abonnement, on libère les serveurs
                 foreach ($rental->getUnits() as $unit) {
                     $unit->setRental(null);
                     $unit->setDescription('Unité disponible');
+
+                    $histo = $this->unitRentalHistoRepository->createQueryBuilder('u')
+                        ->where('u.unit = :unit')
+                        ->andWhere('u.rental = :rental')
+                        ->setParameter('unit', $unit)
+                        ->setParameter('rental', $rental)
+                        ->getQuery()
+                        ->getOneOrNullResult();
+
+                    if ($histo) {
+                        $histo->setEndDate($now);
+                    }
                 }
 
-                // On supprime la location (le contrat est terminé)
-                $this->em->remove($rental);
+                // 2. LA MAGIE DE L'ARCHIVAGE EST ICI
+                // Fini le $this->em->remove($rental); ! On désactive simplement la location :
+                $rental->setIsActive(false);
+
                 $canceled++;
             }
         }
@@ -67,7 +83,7 @@ class CheckRentalsCommand extends Command
         // On exécute toutes les modifications en BDD d'un seul coup
         $this->em->flush();
 
-        $io->success(sprintf('Opération terminée : %d abonnements renouvelés, %d abonnements annulés.', $renewed, $canceled));
+        $io->success(sprintf('Opération terminée : %d abonnements renouvelés, %d abonnements archivés.', $renewed, $canceled));
 
         return Command::SUCCESS;
     }

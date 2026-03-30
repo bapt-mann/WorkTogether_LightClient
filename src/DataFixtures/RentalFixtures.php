@@ -29,6 +29,7 @@ class RentalFixtures extends Fixture implements DependentFixtureInterface
             $rental->setPurchaseDate(new \DateTime('-' . rand(1, 60) . ' days'));
             $rental->setIsAutoRenew(true);
             $rental->setEndDate((clone $rental->getPurchaseDate())->modify('+30 days'));
+            $rental->setIsActive(true);
 
             $manager->persist($rental);
             $this->addReference('RENTAL_' . $i, $rental);

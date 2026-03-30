@@ -38,6 +38,9 @@ class Rental
     #[ORM\Column]
     private ?\DateTime $endDate = null;
 
+    #[ORM\Column]
+    private ?bool $isActive = null;
+
     public function __construct()
     {
         $this->units = new ArrayCollection();
@@ -134,6 +137,18 @@ class Rental
     public function setEndDate(\DateTime $endDate): static
     {
         $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

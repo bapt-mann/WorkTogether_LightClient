@@ -17,6 +17,8 @@ class UnitFixtures extends Fixture implements DependentFixtureInterface
         $currentRentalIndex = 0;
         $unitsAssignedToCurrentRental = 0;
         $incidentCounter = 0;
+        
+        $globalUnitCounter = 1; // Ce compteur va aller de 1 à 1260
 
         // Boucle sur le datacenter physique (30 baies x 42 Unités)
         for ($i = 1; $i <= 30; $i++) {
@@ -30,7 +32,11 @@ class UnitFixtures extends Fixture implements DependentFixtureInterface
                 $unit->setState($this->getReference(StateFixtures::STATE_OK, State::class));
                 $unit->setDescription('Unité disponible');
 
-                // --- ALGORITHME D'ALLOCATION CONTIGUË ---
+                // donne TOUJOURS une référence globale à l'unité pour que les HistoFixtures la trouvent
+                $this->addReference('UNIT_' . $globalUnitCounter, $unit);
+                $globalUnitCounter++; 
+
+                // --- ALGORITHME D'ALLOCATION ---
                 if ($currentRentalIndex < RentalFixtures::TOTAL_RENTALS) {
                     $rental = $this->getReference('RENTAL_' . $currentRentalIndex, Rental::class);
                     $unitsNeeded = $rental->getOffer()->getUnitsNumber();
@@ -42,6 +48,7 @@ class UnitFixtures extends Fixture implements DependentFixtureInterface
                     // Simulation de quelques pannes aléatoires sur les serveurs loués (environ 5%)
                     if (rand(1, 100) <= 5) {
                         $unit->setState($this->getReference(StateFixtures::STATE_INCIDENT, State::class));
+                        // On peut garder cette référence en plus si on en a besoin ailleurs
                         $this->addReference('INCIDENT_UNIT_' . $incidentCounter, $unit);
                         $incidentCounter++;
                     }

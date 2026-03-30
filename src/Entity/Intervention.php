@@ -29,9 +29,6 @@ class Intervention
     #[ORM\ManyToOne(inversedBy: 'interventions')]
     private ?Unit $unit = null;
 
-    #[ORM\ManyToOne(inversedBy: 'interventions')]
-    private ?Bay $bay = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -93,18 +90,6 @@ class Intervention
     public function setUnit(?unit $unit): static
     {
         $this->unit = $unit;
-
-        return $this;
-    }
-
-    public function getBay(): ?Bay
-    {
-        return $this->bay;
-    }
-
-    public function setBay(?Bay $bay): static
-    {
-        $this->bay = $bay;
 
         return $this;
     }

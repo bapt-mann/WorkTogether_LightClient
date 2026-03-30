@@ -20,7 +20,6 @@ class InterventionFixtures extends Fixture implements DependentFixtureInterface
             
             $intervention = new Intervention();
             $intervention->setUnit($unit);
-            $intervention->setBay($unit->getBay());
             
             // Attribue un technicien au hasard parmi les 5 créés
             $intervention->setTechnician($this->getReference('TECH_' . rand(0, 4), Technician::class));

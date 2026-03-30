@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\RentalRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\FormError;
 
 
+
 /**
  * Controller permettant de gérer l'espace client de l'utilisateur connecté
  * Récuprère les informations du profil du compte, les locations en cours, les unités associées,
@@ -21,14 +23,17 @@ final class CustomerAreaController extends AbstractController
 {
     #[Route('/customerarea', name: 'app_customer_area')]
     #[IsGranted("ROLE_USER")]
-    public function index(): Response
+    public function index(RentalRepository $rentalRepository): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
-        $rentals = [];
-        $rentals = $user->getCompany()->getRentals();
+        $company = $user->getCompany();
 
-        // Récupère les unités de toutes les locations
+        $rentals = $rentalRepository->findBy([
+            'company' => $company,
+            'isActive' => true
+        ]);
+
         $units = [];
         foreach ($rentals as $rental) {
             foreach ($rental->getUnits() as $unit) {
@@ -58,7 +63,7 @@ final class CustomerAreaController extends AbstractController
     {
         $user = $this->getUser();
         $company = $user->getCompany();
-        
+
         $form = $this->createForm(UpdateProfileType::class, $user, [
             'companyName' => $company ? $company->getCompanyName() : '',
             'siret' => $company ? $company->getSiret() : '',
@@ -135,12 +140,12 @@ final class CustomerAreaController extends AbstractController
         $user = $this->getUser();
 
         // Vérifie que la location appartient bien à l'entreprise de l'utilisateur
-        if ($rental->getCompany() !== $user->getCompany()) {
+        if ($rental->getCompany() !== $user->getCompany() || $rental->isActive() === false) {
             $this->addFlash('error', 'Action non autorisée. Cette location ne vous appartient pas.');
             return $this->redirectToRoute('app_customer_area');
         }
 
-        // Inverse le booléen 
+        // Inverse le booléen
         $rental->setIsAutoRenew(!$rental->isAutoRenew());
 
         // Sauvegarde en base de données

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260322175618 extends AbstractMigration
+final class Version20260328154914 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,12 +20,12 @@ final class Version20260322175618 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE rental ADD is_auto_renew TINYINT(1) NOT NULL, ADD end_date DATETIME NOT NULL');
+        $this->addSql('ALTER TABLE unit_rental_histo CHANGE end_date end_date DATETIME DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE rental DROP is_auto_renew, DROP end_date');
+        $this->addSql('ALTER TABLE unit_rental_histo CHANGE end_date end_date DATE NOT NULL');
     }
 }

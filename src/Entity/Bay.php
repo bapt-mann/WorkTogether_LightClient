@@ -34,21 +34,9 @@ class Bay
     #[ORM\OneToMany(targetEntity: Intervention::class, mappedBy: 'bay')]
     private Collection $interventions;
 
-    /**
-     * @var Collection<int, BayHisto>
-     */
-    #[ORM\OneToMany(targetEntity: BayHisto::class, mappedBy: 'bay')]
-    private Collection $bayHistos;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?state $state = null;
-
     public function __construct()
     {
         $this->units = new ArrayCollection();
-        $this->interventions = new ArrayCollection();
-        $this->bayHistos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -106,78 +94,6 @@ class Bay
                 $unit->setBay(null);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Intervention>
-     */
-    public function getInterventions(): Collection
-    {
-        return $this->interventions;
-    }
-
-    public function addIntervention(Intervention $intervention): static
-    {
-        if (!$this->interventions->contains($intervention)) {
-            $this->interventions->add($intervention);
-            $intervention->setBay($this);
-        }
-
-        return $this;
-    }
-
-    public function removeIntervention(Intervention $intervention): static
-    {
-        if ($this->interventions->removeElement($intervention)) {
-            // set the owning side to null (unless already changed)
-            if ($intervention->getBay() === $this) {
-                $intervention->setBay(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, BayHisto>
-     */
-    public function getBayHistos(): Collection
-    {
-        return $this->bayHistos;
-    }
-
-    public function addBayHisto(BayHisto $bayHisto): static
-    {
-        if (!$this->bayHistos->contains($bayHisto)) {
-            $this->bayHistos->add($bayHisto);
-            $bayHisto->setBay($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBayHisto(BayHisto $bayHisto): static
-    {
-        if ($this->bayHistos->removeElement($bayHisto)) {
-            // set the owning side to null (unless already changed)
-            if ($bayHisto->getBay() === $this) {
-                $bayHisto->setBay(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getState(): ?state
-    {
-        return $this->state;
-    }
-
-    public function setState(?state $state): static
-    {
-        $this->state = $state;
 
         return $this;
     }

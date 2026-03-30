@@ -16,7 +16,6 @@ class BayFixtures extends Fixture implements DependentFixtureInterface
             $bay = new Bay();
             $bay->setLabel('B' . str_pad($i, 3, '0', STR_PAD_LEFT));
             $bay->setSize(42);
-            $bay->setState($this->getReference(StateFixtures::STATE_OK, State::class));
             $manager->persist($bay);
             $this->addReference('BAY_' . $i, $bay);
         }
