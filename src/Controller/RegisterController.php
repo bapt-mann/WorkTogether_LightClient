@@ -94,7 +94,7 @@ final class RegisterController extends AbstractController
             }
 
             dump('Checking Siret');
-            $siret = $form->get('siret')->getData();
+            $siret = trim($form->get('siret')->getData());
             if ($siret === null || !preg_match('/^\d{14}$/', $siret)) {
                 $form->get('siret')->addError(new FormError(
                     'Le SIRET de l\'entreprise est obligatoire et doit contenir 14 chiffres.'
