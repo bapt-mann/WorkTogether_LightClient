@@ -9,11 +9,8 @@ class TechnicianFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $names = ['Alice Expert-Réseau', 'Bob Câblage', 'Charlie Serveur', 'Diane Fibre', 'Éric Système'];
-
-        foreach ($names as $i => $name) {
+        for ($i = 0; $i < 10; $i++) {
             $tech = new Technician();
-            $tech->setLabel($name);
             $manager->persist($tech);
             $this->addReference('TECH_' . $i, $tech);
         }
