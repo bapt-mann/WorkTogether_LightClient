@@ -14,18 +14,6 @@ class UnitHisto
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $startDate = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTime $endDate = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $label = null;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $size = null;
-
     #[ORM\ManyToOne(inversedBy: 'unitHistos')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Unit $unit = null;
@@ -34,59 +22,22 @@ class UnitHisto
     #[ORM\JoinColumn(nullable: false)]
     private ?State $state = null;
 
+    #[ORM\Column]
+    private ?\DateTime $updateDate = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $changes = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $unitDescription = null;
+
+    #[ORM\ManyToOne]
+    private ?Rental $rental = null;
+
     public function getId(): ?int
     {
         return $this->id;
     }
-
-    public function getStartDate(): ?\DateTime
-    {
-        return $this->startDate;
-    }
-
-    public function setStartDate(\DateTime $startDate): static
-    {
-        $this->startDate = $startDate;
-
-        return $this;
-    }
-
-    public function getEndDate(): ?\DateTime
-    {
-        return $this->endDate;
-    }
-
-    public function setEndDate(\DateTime $endDate): static
-    {
-        $this->endDate = $endDate;
-
-        return $this;
-    }
-
-    public function getLabel(): ?string
-    {
-        return $this->label;
-    }
-
-    public function setLabel(string $label): static
-    {
-        $this->label = $label;
-
-        return $this;
-    }
-
-    public function getSize(): ?string
-    {
-        return $this->size;
-    }
-
-    public function setSize(string $size): static
-    {
-        $this->size = $size;
-
-        return $this;
-    }
-
     public function getUnit(): ?unit
     {
         return $this->unit;
@@ -107,6 +58,54 @@ class UnitHisto
     public function setState(?state $state): static
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    public function getUpdateDate(): ?\DateTime
+    {
+        return $this->updateDate;
+    }
+
+    public function setUpdateDate(\DateTime $updateDate): static
+    {
+        $this->updateDate = $updateDate;
+
+        return $this;
+    }
+
+    public function getChanges(): ?string
+    {
+        return $this->changes;
+    }
+
+    public function setChanges(string $changes): static
+    {
+        $this->changes = $changes;
+
+        return $this;
+    }
+
+    public function getUnitDescription(): ?string
+    {
+        return $this->unitDescription;
+    }
+
+    public function setUnitDescription(string $unitDescription): static
+    {
+        $this->unitDescription = $unitDescription;
+
+        return $this;
+    }
+
+    public function getRental(): ?Rental
+    {
+        return $this->rental;
+    }
+
+    public function setRental(?Rental $rental): static
+    {
+        $this->rental = $rental;
 
         return $this;
     }
