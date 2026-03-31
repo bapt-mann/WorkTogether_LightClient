@@ -16,28 +16,33 @@ class RentalRepository extends ServiceEntityRepository
         parent::__construct($registry, Rental::class);
     }
 
-    //    /**
-    //     * @return Rental[] Returns an array of Rental objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Récupérer les locations actives d'une entreprise avec toutes leurs relations (Unités, Baies, etc.)
+     * afin d'éviter le problème de requêtes N+1 (Lazy Loading).
+     */
+    public function findActiveRentalsWithDetailsByCompany($company)
+    {
+        return $this->createQueryBuilder('r')
+            // 1. On cherche les locations de l'entreprise qui sont actives
+            ->where('r.company = :company')
+            ->andWhere('r.isActive = true')
+            ->setParameter('company', $company)
 
-    //    public function findOneBySomeField($value): ?Rental
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+            // 2. LA MAGIE EST ICI : On fait des jointures et on "sélectionne" les données
+            // (addSelect dit à Doctrine de garder les infos en mémoire)
+            ->leftJoin('r.offer', 'o')
+            ->addSelect('o')
+
+            ->leftJoin('r.units', 'u')
+            ->addSelect('u')
+
+            ->leftJoin('u.bay', 'b')
+            ->addSelect('b')
+
+            ->leftJoin('u.state', 's')
+            ->addSelect('s')
+
+            ->getQuery()
+            ->getResult();
+    }
 }
