@@ -27,10 +27,11 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $user->setLastName('Numéro ' . $i);
             $user->setIsVerified(true);
             $user->setPassword($this->hasher->hashPassword($user, 'client123'));
-            
+            $user->setFailedLoginAttempts(0);
+
             // On récupère l'entreprise générée dans CompanyFixtures
             $user->setCompany($this->getReference('COMPANY_' . $i, Company::class));
-            
+
             $manager->persist($user);
         }
         $manager->flush();

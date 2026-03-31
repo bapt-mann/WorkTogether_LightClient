@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use BcMath\Number;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -43,6 +45,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Company $company = null;
 
+    #[ORM\Column(type: 'integer')]
+    private int $failedLoginAttempts = 0; // On l'initialise à 0 par défaut
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isLocked = false; // Non bloqué par défaut
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $unlockToken = null;
     public function getId(): ?int
     {
         return $this->id;
@@ -168,6 +178,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    public function getFailedLoginAttempts(): int
+    {
+        return $this->failedLoginAttempts;
+    }
+
+    public function setFailedLoginAttempts(int $failedLoginAttempts): static
+    {
+        $this->failedLoginAttempts = $failedLoginAttempts;
+
+        return $this;
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->isLocked;
+    }
+
+    public function setIsLocked(bool $isLocked): static
+    {
+        $this->isLocked = $isLocked;
+
+        return $this;
+    }
+
+    public function getUnlockToken(): ?string
+    {
+        return $this->unlockToken;
+    }
+
+    public function setUnlockToken(?string $unlockToken): static
+    {
+        $this->unlockToken = $unlockToken;
 
         return $this;
     }
