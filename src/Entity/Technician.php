@@ -15,15 +15,12 @@ class Technician
     #[ORM\Column]
     private ?int $id = null;
 
-    /**
-     * @var Collection<int, Intervention>
-     */
-    #[ORM\OneToMany(targetEntity: Intervention::class, mappedBy: 'technician')]
-    private Collection $interventions;
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
 
     public function __construct()
     {
-        $this->interventions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -31,33 +28,16 @@ class Technician
         return $this->id;
     }
 
-    /**
-     * @return Collection<int, Intervention>
-     */
-    public function getInterventions(): Collection
+    public function getUser(): ?User
     {
-        return $this->interventions;
+        return $this->user;
     }
 
-    public function addIntervention(Intervention $intervention): static
+    public function setUser(User $user): static
     {
-        if (!$this->interventions->contains($intervention)) {
-            $this->interventions->add($intervention);
-            $intervention->setTechnician($this);
-        }
+        $this->user = $user;
 
         return $this;
     }
 
-    public function removeIntervention(Intervention $intervention): static
-    {
-        if ($this->interventions->removeElement($intervention)) {
-            // set the owning side to null (unless already changed)
-            if ($intervention->getTechnician() === $this) {
-                $intervention->setTechnician(null);
-            }
-        }
-
-        return $this;
-    }
 }

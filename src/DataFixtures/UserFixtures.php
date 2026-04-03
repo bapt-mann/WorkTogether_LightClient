@@ -2,6 +2,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
+use App\Entity\Technician;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -31,6 +32,20 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
             // On récupère l'entreprise générée dans CompanyFixtures
             $user->setCompany($this->getReference('COMPANY_' . $i, Company::class));
+
+            $manager->persist($user);
+        }
+
+        for ($i = 0; $i <= 5; $i++) {
+            $user = new User();
+            $user->setEmail("tech$i@w2gether$i.fr");
+            $user->setRoles(['ROLE_TECHNICIAN']);
+            $user->setFirstName("Tech$i");
+            $user->setLastName('Tech ' . $i);
+            $user->setIsVerified(true);
+            $user->setPassword($this->hasher->hashPassword($user, 'client123'));
+            $user->setFailedLoginAttempts(0);
+            $this->addReference('TECH_' . $i,$user);
 
             $manager->persist($user);
         }

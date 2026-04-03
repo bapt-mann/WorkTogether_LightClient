@@ -23,11 +23,11 @@ class Intervention
     private ?\DateTime $endDate = null;
 
     #[ORM\ManyToOne(inversedBy: 'interventions')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Technician $technician = null;
-
-    #[ORM\ManyToOne(inversedBy: 'interventions')]
     private ?Unit $unit = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $technician = null;
 
     public function getId(): ?int
     {
@@ -70,18 +70,6 @@ class Intervention
         return $this;
     }
 
-    public function getTechnician(): ?technician
-    {
-        return $this->technician;
-    }
-
-    public function setTechnician(?technician $technician): static
-    {
-        $this->technician = $technician;
-
-        return $this;
-    }
-
     public function getUnit(): ?unit
     {
         return $this->unit;
@@ -93,4 +81,17 @@ class Intervention
 
         return $this;
     }
+
+    public function getTechnician(): ?User
+    {
+        return $this->technician;
+    }
+
+    public function setTechnician(?User $technician): static
+    {
+        $this->technician = $technician;
+
+        return $this;
+    }
+
 }

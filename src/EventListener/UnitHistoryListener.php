@@ -26,15 +26,15 @@ class UnitHistoryListener
         // Extraire uniquement les champs modifiés avec leurs anciennes et nouvelles valeurs
         $changeset = $args->getEntityChangeSet();
 
+        $this->logger->info('Modifications de l\'unité', [
+            'unit_id' => $unit->getId(),
+            'champs_modifies' => array_keys($changeset)
+        ]);
+
         // Interrompre le processus si aucune modification réelle n'est détectée
         if (empty($changeset)) {
             return;
         }
-
-        $this->logger->info('Générer une entrée d\'historique automatique pour une unité.', [
-            'unit_id' => $unit->getId(),
-            'champs_modifies' => array_keys($changeset)
-        ]);
 
         $em = $args->getObjectManager();
 
