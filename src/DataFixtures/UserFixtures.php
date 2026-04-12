@@ -38,17 +38,38 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
         for ($i = 0; $i <= 5; $i++) {
             $user = new User();
-            $user->setEmail("tech$i@w2gether$i.fr");
+            $user->setEmail("tech$i@w2g.fr");
             $user->setRoles(['ROLE_TECHNICIAN']);
             $user->setFirstName("Tech$i");
             $user->setLastName('Tech ' . $i);
             $user->setIsVerified(true);
-            $user->setPassword($this->hasher->hashPassword($user, 'client123'));
+            $user->setPassword($this->hasher->hashPassword($user, 'tech123'));
             $user->setFailedLoginAttempts(0);
             $this->addReference('TECH_' . $i,$user);
 
             $manager->persist($user);
         }
+
+        $user = new User();
+        $user->setEmail("accountant@w2g.fr");
+        $user->setRoles(['ROLE_ACCOUNTANT']);
+        $user->setFirstName("Accountant");
+        $user->setLastName('Accountant');
+        $user->setIsVerified(true);
+        $user->setPassword($this->hasher->hashPassword($user, 'acc123'));
+        $user->setFailedLoginAttempts(0);
+        $manager->persist($user);
+
+        $user = new User();
+        $user->setEmail("admin@w2g.fr");
+        $user->setRoles(['ROLE_ADMIN']);
+        $user->setFirstName("Admin");
+        $user->setLastName('Admin');
+        $user->setIsVerified(true);
+        $user->setPassword($this->hasher->hashPassword($user, 'admin123'));
+        $user->setFailedLoginAttempts(0);
+        $manager->persist($user);
+
         $manager->flush();
     }
 
