@@ -145,20 +145,6 @@ final class CustomerAreaController extends AbstractController
         ]);
     }
 
-    #[Route('/customerarea/changepassword', name: 'change_password')]
-    #[IsGranted("ROLE_USER")]
-    public function changePassword(): Response
-    {
-        // En attente d'implémentation
-    }
-
-    #[Route('/customerarea/seeInterventions', name: 'see_interventions')]
-    #[IsGranted("ROLE_USER")]
-    public function seeInterventions(): Response
-    {
-        // En attente d'implémentation
-    }
-
     #[Route('/customerarea/rental/{id}/toggle-renew', name: 'toggle_auto_renew', methods: ['POST'])]
     #[IsGranted("ROLE_USER")]
     public function toggleAutoRenew(Rental $rental, EntityManagerInterface $em, LoggerInterface $logger): Response
