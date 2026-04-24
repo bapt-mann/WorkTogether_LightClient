@@ -10,8 +10,12 @@ if [ "$APP_ENV" = "dev" ] && [ -f composer.json ]; then
     fi
 
     if [ -f bin/console ]; then
-        echo "[entrypoint] Installing importmap..."
-        php bin/console importmap:install || true
+        if php bin/console list --raw 2>/dev/null | grep -qx 'importmap:install'; then
+            echo "[entrypoint] Installing importmap..."
+            php bin/console importmap:install
+        else
+            echo "[entrypoint] Skipping importmap installation: importmap:install command not available."
+        fi
     fi
 fi
 

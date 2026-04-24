@@ -36,7 +36,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uapp", "-papp"]
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$MYSQL_PASSWORD\" mysqladmin ping -h localhost -uapp"]
       interval: 5s
       timeout: 5s
       retries: 20
