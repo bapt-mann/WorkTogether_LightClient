@@ -1,4 +1,4 @@
-name: Build & Push Docker image (main)
+name: Build & Push Docker image (master)
 
 on:
     push:
@@ -36,4 +36,4 @@ jobs:
                   file: ./Dockerfile
                   push: true
                   tags: |
-                      ghcr.io/worktogether-web:${{github.sha}}
+                      ghcr.io/bapt-mann/worktogether-web:${{github.sha}}
