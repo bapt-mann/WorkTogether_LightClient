@@ -1,0 +1,112 @@
+# syntax=docker/dockerfile:1.7
+
+ARG PHP_VERSION=8.4
+ARG FRANKENPHP_VERSION=1
+
+# ---------- Stage 1: vendor (composer deps, no scripts, no autoload) ----------
+FROM composer:2 AS vendor
+
+WORKDIR /app
+
+COPY composer.json composer.lock symfony.lock ./
+
+RUN --mount=type=cache,target=/tmp/composer-cache \
+    COMPOSER_CACHE_DIR=/tmp/composer-cache \
+    composer install \
+        --no-dev \
+        --no-scripts \
+        --no-autoloader \
+        --prefer-dist \
+        --no-interaction \
+        --no-progress
+
+# ---------- Stage 2: builder (dump autoload, run post-install, compile assets) ----------
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-alpine AS builder
+
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    APP_ENV=prod \
+    APP_DEBUG=0
+
+RUN install-php-extensions \
+        @composer \
+        intl \
+        pdo_mysql \
+        zip \
+        sodium \
+        opcache
+
+WORKDIR /app
+
+COPY --from=vendor /app/vendor ./vendor
+COPY composer.json composer.lock symfony.lock ./
+COPY bin ./bin
+COPY config ./config
+COPY migrations ./migrations
+COPY public ./public
+COPY src ./src
+COPY templates ./templates
+COPY assets ./assets
+COPY .env ./.env
+
+RUN mkdir -p var \
+ && composer dump-autoload --no-dev --classmap-authoritative \
+ && composer run-script --no-dev post-install-cmd \
+ && php bin/console asset-map:compile
+
+# ---------- Stage 3: dev (optional target: --target dev) ----------
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-alpine AS dev
+
+ENV APP_ENV=dev \
+    APP_DEBUG=1 \
+    SERVER_NAME=":80" \
+    COMPOSER_ALLOW_SUPERUSER=1 \
+    XDEBUG_MODE=off
+
+RUN install-php-extensions \
+        @composer \
+        intl \
+        pdo_mysql \
+        zip \
+        sodium \
+        opcache \
+        xdebug
+
+COPY docker/php/app.dev.ini $PHP_INI_DIR/conf.d/app.ini
+
+WORKDIR /app
+
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
+
+# ---------- Stage 4: prod (DEFAULT TARGET — must be last) ----------
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-alpine AS prod
+
+ENV APP_ENV=prod \
+    APP_DEBUG=0 \
+    SERVER_NAME=":80"
+
+RUN install-php-extensions \
+        intl \
+        pdo_mysql \
+        zip \
+        sodium \
+        opcache
+
+COPY docker/php/app.prod.ini $PHP_INI_DIR/conf.d/app.ini
+
+WORKDIR /app
+
+COPY --from=builder --chown=www-data:www-data /app /app
+
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
