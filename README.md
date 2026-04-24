@@ -115,3 +115,4 @@ L'application expose une API REST sécurisée permettant d'interroger l'état de
 -----
 
 *Ce projet a été réalisé dans le cadre de la préparation à l'épreuve E6 du BTS SIO (Services Informatiques aux Organisations).*
+# change
