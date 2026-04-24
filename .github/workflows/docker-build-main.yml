@@ -2,7 +2,7 @@ name: Build & Push Docker image (main)
 
 on:
     push:
-        branches: [main]
+        branches: [master]
 
 permissions:
     contents: read
