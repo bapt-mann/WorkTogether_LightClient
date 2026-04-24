@@ -17,3 +17,4 @@
 ###< symfony/asset-mapper ###
 /.phpunit.result.cache
 /ameliorations.md
+.claude/
